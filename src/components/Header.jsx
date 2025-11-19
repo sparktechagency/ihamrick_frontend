@@ -37,23 +37,20 @@ function Header() {
     setActiveTab(getActiveTab());
   }, [location.pathname]);
 
-  // ✅ Dynamically set header background
 const headerBg =
   location.pathname === "/" || location.pathname === "/home"
     ? "bg-transparent"
-    : "bg-white"; // no border, just white background
+    : "bg-white"; 
 
   return (
 <header className={`fixed top-0 left-0 w-full z-[9999] px-4 py-6 transition-colors duration-300 ${headerBg}`}>
       <div className="flex items-center justify-between w-full">
-        {/* Logo */}
+      
         <div className="w-24 h-8 flex-shrink-0">
           <Link to="/home">
             <img src={LogoIcon} alt="Logo" className="w-full h-full object-contain" />
           </Link>
         </div>
-
-        {/* Search & Navigation (desktop) */}
         <div className="hidden lg:flex ml-auto mr-10 rounded-lg border h-8 p-1 items-center w-40 md:w-56 lg:w-64 flex-shrink-0">
           <input type="text" placeholder="Search..." className="w-full outline-none px-2 text-sm bg-transparent" aria-label="Search" />
           <img src={SearchIcon} alt="Search Icon" className="w-5 h-5 opacity-60 flex-shrink-0" />
