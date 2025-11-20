@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const PublicationCard = ({
@@ -10,13 +10,24 @@ const PublicationCard = ({
   description,
   pdfLink,
 }) => {
+  useEffect(() => {
+    console.log(
+      id,
+      imageUrl,
+      headline,
+      author,
+      publishedDate,
+      description,
+      pdfLink
+    );
+  }, [id]); // Empty dependency array ensures it runs once after the first render
+
   return (
     <div
       className="bg-[#F7F6FA] w-full max-w-[380px] h-[380px] rounded-2xl 
                  overflow-hidden shadow-2xl flex flex-col transition-all 
                  duration-300 hover:shadow-red-500/50"
     >
-      {/* Link wrapping entire card for accessibility */}
       <Link
         to={`/publications/${id}`}
         state={{

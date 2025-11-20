@@ -1,41 +1,49 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Motivation from "../../components/Motivation";
-import publicationData from "./components/publicationData";
 import PublicationCard from "./components/PublicationCard";
-import { useState } from "react"; // ✅ Import useState
-import HorizontalCard from "../../components/HorizontalCard"; // ✅ Your alternative card
+import HorizontalCard from "../../components/HorizontalCard";
 import Pagination from "../../components/Pagination";
+import { useGetAllPublicationsQuery } from "../../services/allApi";
 
 function Publications() {
   const [currentPage, setCurrentPage] = useState(1);
-  // ✅ Set ITEMS_PER_PAGE based on fromMain
-
-
+  const { data, isLoading, error } = useGetAllPublicationsQuery();
   const location = useLocation();
   const currentPath = location.pathname;
   const fromMain = currentPath === "/" || currentPath === "/home";
   const isRootPublicationsRoute = currentPath === "/publications";
-  const ITEMS_PER_PAGE = 15
+  const ITEMS_PER_PAGE = 1;
   const CardComponent = fromMain ? HorizontalCard : PublicationCard;
-  const totalPages = Math.ceil(publicationData.length / ITEMS_PER_PAGE);
 
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentItems = publicationData.slice(
-    startIndex,
-    startIndex + ITEMS_PER_PAGE
-  );
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentItems, setCurrentItems] = useState([]);
+
+  useEffect(() => {
+    if (data) {
+      const total = data?.meta?.total || 0;
+      setTotalPages(Math.ceil(total / ITEMS_PER_PAGE));
+      const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+      const items = data?.data.slice(startIndex, startIndex + ITEMS_PER_PAGE) || [];
+      setCurrentItems(items);
+    }
+  }, [data, currentPage]);
+
+  if (isLoading) {
+    return <p>Loading publications...</p>;
+  }
+
+  if (error) {
+    return <p>Error loading publications. Please try again later.</p>;
+  }
+
   return (
     <div className="flex flex-col items-center py-12 sm:py-16 md:py-24 lg:py-32 min-h-[98vh] relative w-full">
       {isRootPublicationsRoute && <Motivation />}
-      {/* Header Row */}
       <header className="relative flex justify-center items-center mb-8 sm:mb-10 md:mb-12 w-full px-4 sm:px-8">
-        {/* 1️⃣ Center Title */}
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 text-center w-full">
           Publications
         </h1>
-
-        {/* 2️⃣ Responsive “View All” Button */}
         {fromMain && (
           <div className="absolute right-4 sm:right-6 md:right-10 top-1/2 -translate-y-1/2">
             <Link
@@ -55,26 +63,22 @@ function Publications() {
         )}
       </header>
 
-      {/* Blog Grid
-      {isRootBlogRoute && (
-
-      )} */}
       <div className="grid gap-8 sm:gap-10 md:gap-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 px-4 sm:px-6 md:px-10 w-full max-w-7xl">
-        {currentItems.map((item) => (
+        {currentItems?.map((item) => (
           <CardComponent
-            key={item.id}
-            id={item.id}
-            imageUrl={item.imageUrl}
-            headline={item.headline}
+            key={item._id}
+            id={item._id}
+            imageUrl={item.coverImage}
+            headline={item.title}
             author={item.author}
-            publishedDate={item.publishedDate}
+            publishedDate={item.publicationDate}
             description={item.description}
-            pdfLink={item.pdfLink}
+            pdfLink={item.file}
             from="publications"
           />
         ))}
       </div>
-      {/* Pagination */}
+
       {totalPages > 1 && isRootPublicationsRoute && (
         <Pagination
           currentPage={currentPage}

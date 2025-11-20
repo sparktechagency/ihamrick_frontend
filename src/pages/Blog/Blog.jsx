@@ -20,8 +20,10 @@ function Blog() {
   const currentPath = location.pathname;
   const fromMain = currentPath === "/" || currentPath === "/home";
 
-  const ITEMS_PER_PAGE = 10; 
-  const isRootBlogRoute = currentPath === "/blogs";
+  const ITEMS_PER_PAGE = 2; // Static number, can be dynamic based on `fromMain`
+  const isRootBlogRoute = currentPath === "/blog";
+
+  // Conditional Card Component
   const CardComponent = fromMain ? HorizontalCard : BlogCard;
 
   if (isLoading) {
@@ -65,7 +67,7 @@ function Blog() {
             headline={item.title}
             linkText="Read More"
             blogContent={item.description}
-            from="blog"
+            from="blogs"
           />
         ))}
       </div>
@@ -79,4 +81,5 @@ function Blog() {
     </div>
   );
 }
+
 export default Blog;
