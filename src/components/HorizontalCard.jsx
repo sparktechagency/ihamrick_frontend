@@ -49,10 +49,10 @@ export default function HorizontalCard({
       />
 
       <div className="flex-1 px-4 py-3 text-white font-semibold text-sm sm:text-base truncate">
-        {from === "publications" || from === "blogs" ? headline : title}
+        {from === "publications" || from === "blog" ? headline : title}
       </div>
 
-      {/* Right Icon/Button */}
+
       <div className="bg-[#D75757] w-16 h-full flex items-center justify-center">
         {typeof rightIcon === "string" ? (
           <img src={rightIcon} alt="icon" className="w-6 h-6" />

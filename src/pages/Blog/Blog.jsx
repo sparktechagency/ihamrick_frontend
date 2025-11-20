@@ -12,7 +12,7 @@ function Blog() {
 
   useEffect(() => {
     if (data) {
-      console.log("Fetched Blogs Data:", data);
+  
     }
   }, [data]);
 
@@ -20,10 +20,8 @@ function Blog() {
   const currentPath = location.pathname;
   const fromMain = currentPath === "/" || currentPath === "/home";
 
-  const ITEMS_PER_PAGE = 10; // Static number, can be dynamic based on `fromMain`
-  const isRootBlogRoute = currentPath === "/blog";
-
-  // Conditional Card Component
+  const ITEMS_PER_PAGE = 10; 
+  const isRootBlogRoute = currentPath === "/blogs";
   const CardComponent = fromMain ? HorizontalCard : BlogCard;
 
   if (isLoading) {
@@ -58,8 +56,6 @@ function Blog() {
           </div>
         )}
       </header>
-
-      {/* Blog Grid */}
       <div className="grid gap-8 sm:gap-10 md:gap-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 px-4 sm:px-6 md:px-10 w-full max-w-7xl">
         {currentItems?.map((item) => (
           <CardComponent
@@ -69,12 +65,10 @@ function Blog() {
             headline={item.title}
             linkText="Read More"
             blogContent={item.description}
-            from="blogs"
+            from="blog"
           />
         ))}
       </div>
-
-      {/* Pagination */}
       {totalPages > 1 && isRootBlogRoute && (
         <Pagination
           currentPage={currentPage}
@@ -85,5 +79,4 @@ function Blog() {
     </div>
   );
 }
-
 export default Blog;

@@ -2,7 +2,6 @@ import React from "react";
 
 import { Link } from "react-router-dom";
 
-
 const BlogCard = ({ id, imageUrl, headline, linkText, blogContent }) => {
   const RightArrowIcon = () => (
     <svg
@@ -21,7 +20,7 @@ const BlogCard = ({ id, imageUrl, headline, linkText, blogContent }) => {
       <path d="m12 5 7 7-7 7" />
     </svg>
   );
-
+  console.log("this is form blog ", id);
   return (
     <div
       className="bg-black w-full max-w-[380px] h-[380px] md:h-[380px] 
