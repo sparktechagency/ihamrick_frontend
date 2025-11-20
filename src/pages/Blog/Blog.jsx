@@ -8,14 +8,11 @@ import Pagination from "../../components/Pagination";
 
 function Blog() {
   const [currentPage, setCurrentPage] = useState(1);
-
-  // Fetch the blogs using the RTK Query hook
   const { data, isLoading, error } = useGetAllBlogsQuery();
 
-  // Log the fetched data for debugging purposes
   useEffect(() => {
     if (data) {
-      console.log("Fetched Blogs Data:", data); 
+      console.log("Fetched Blogs Data:", data);
     }
   }, [data]);
 
@@ -23,12 +20,11 @@ function Blog() {
   const currentPath = location.pathname;
   const fromMain = currentPath === "/" || currentPath === "/home";
 
-  const ITEMS_PER_PAGE = 15; 
+  const ITEMS_PER_PAGE = 10; // Static number, can be dynamic based on `fromMain`
   const isRootBlogRoute = currentPath === "/blog";
 
   // Conditional Card Component
   const CardComponent = fromMain ? HorizontalCard : BlogCard;
-
 
   if (isLoading) {
     return <p>Loading blogs...</p>;
@@ -38,16 +34,14 @@ function Blog() {
     return <p>Error loading blogs. Please try again later.</p>;
   }
 
-
-  const totalPages = Math.ceil(data?.meta.total / ITEMS_PER_PAGE); 
+  const totalPages = Math.ceil(data?.meta.total / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-
-
   const currentItems = data?.data.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   return (
     <div className="flex flex-col items-center py-12 sm:py-16 md:py-24 lg:py-32 min-h-[98vh] relative w-full">
       {isRootBlogRoute && <Motivation />}
+
       <header className="relative flex justify-center items-center mb-8 sm:mb-10 md:mb-12 w-full px-4 sm:px-8">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 text-center w-full">
           Blog
@@ -69,16 +63,18 @@ function Blog() {
       <div className="grid gap-8 sm:gap-10 md:gap-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 px-4 sm:px-6 md:px-10 w-full max-w-7xl">
         {currentItems?.map((item) => (
           <CardComponent
-            key={item._id} 
+            key={item._id}
             id={item._id}
             imageUrl={item.coverImage}
             headline={item.title}
             linkText="Read More"
-            blogContent={item.description} 
+            blogContent={item.description}
             from="blogs"
           />
         ))}
       </div>
+
+      {/* Pagination */}
       {totalPages > 1 && isRootBlogRoute && (
         <Pagination
           currentPage={currentPage}
