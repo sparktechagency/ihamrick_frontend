@@ -12,7 +12,9 @@ import {
   Settings,
 } from "lucide-react";
 import videoData from "./videoData";
+import { useGetVideoByIdQuery } from "../../../services/allApi";
 import { useNavigate } from "react-router-dom";
+
 const formatTime = (timeInSeconds) => {
   if (isNaN(timeInSeconds) || timeInSeconds < 0) return "00:00";
   const minutes = Math.floor(timeInSeconds / 60);
@@ -46,11 +48,9 @@ const SpecificVideo = () => {
   const [seekProgress, setSeekProgress] = useState(0);
   const [isFullScreen, setIsFullScreen] = useState(false);
 
-  const videoItem =
-    state || videoData.find((v) => v.id === Number(videoId)) || videoData[0];
-  const { title, description, imageUrl, videoUrl } = videoItem;
-
-  const relatedVideos = videoData.filter((v) => v.id !== videoItem.id);
+  const { data, isLoading, error } = useGetVideoByIdQuery(videoId);
+  const vd = data?.data || {};
+  const { _id, title, description, transcription, signedUrl, thumbnailUrl, uploadDate, views } = vd;
 
   // --- Video Controls ---
   const handlePlayPause = useCallback(() => {
@@ -230,14 +230,14 @@ const SpecificVideo = () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleSeekEnd);
     };
-  }, [videoUrl, handleMouseMove]);
+  }, [signedUrl, handleMouseMove]);
 
   const handleShare = () => {
     if (navigator.share) {
       navigator
         .share({
           title: title || "Video",
-          text: { description },
+          text: description,
           url: window.location.href,
         })
         .catch((err) => console.log(err));
@@ -285,25 +285,25 @@ const SpecificVideo = () => {
           onMouseEnter={() => setShowControls(true)}
           onMouseLeave={() => setShowControls(false)}
         >
-          {videoUrl ? (
+          {signedUrl ? (
             <video
               ref={videoRef}
-              src={videoUrl}
-              poster={imageUrl}
+              src={signedUrl}
+              poster={thumbnailUrl}
               playsInline
               className="w-full aspect-video object-contain"
               onClick={handlePlayPause}
             />
           ) : (
             <img
-              src={imageUrl}
+              src={thumbnailUrl}
               alt={title}
               className="w-full aspect-video object-cover"
             />
           )}
 
           {/* Controls */}
-          {videoUrl && (
+          {signedUrl && (
             <>
               {!isPlaying && !isSeeking && (
                 <div
@@ -425,60 +425,23 @@ const SpecificVideo = () => {
           </p>
         )}
 
-        {/* Related Videos */}
-        <section>
-          <h2 className="text-base sm:text-lg md:text-xl font-bold mb-4 text-gray-800">
-            You Might Also Like
-          </h2>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <button
-              onClick={() => scrollRelated("left")}
-              className="p-2 rounded-full hover:bg-gray-100 transition"
-            >
-              <ChevronLeft size={22} />
-            </button>
-            <div
-              ref={relatedVideosRef}
-              className="flex gap-4 sm:gap-6 overflow-x-auto scrollbar-hide py-2"
-            >
-              {relatedVideos.map((video) => (
-                <Link
-                  key={video.id}
-                  to={`/videos/${video.id}`}
-                  state={video}
-                  className="min-w-[180px] sm:min-w-[220px] md:min-w-[260px] bg-white rounded-xl shadow-md hover:shadow-xl transition overflow-hidden relative group flex-shrink-0"
-                >
-                  <img
-                    src={video.imageUrl}
-                    alt={video.title}
-                    className="w-full h-[120px] sm:h-[140px] md:h-[160px] object-cover group-hover:scale-105 transition-transform"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/30">
-                    <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="white"
-                        viewBox="0 0 24 24"
-                        className="w-6 h-6"
-                      >
-                        <path d="M5 3l14 9-14 9V3z" />
-                      </svg>
-                    </div>
-                  </div>
-                  <div className="p-2 text-center font-semibold text-white text-sm truncate bg-black/50 rounded-b-lg">
-                    {video.title}
-                  </div>
-                </Link>
-              ))}
-            </div>
-            <button
-              onClick={() => scrollRelated("right")}
-              className="p-2 rounded-full hover:bg-gray-100 transition"
-            >
-              <ChevronRight size={22} />
-            </button>
+        {/* Views and Upload Date */}
+        <div className="text-sm text-gray-600 mb-4">
+          <p>
+            <strong>Views:</strong> {views}
+          </p>
+          <p>
+            <strong>Uploaded on:</strong> {new Date(uploadDate).toLocaleDateString()}
+          </p>
+        </div>
+
+        {/* Transcription */}
+        {transcription && (
+          <div className="text-sm text-gray-700">
+            <h3 className="font-semibold">Transcription:</h3>
+            <p>{transcription}</p>
           </div>
-        </section>
+        )}
       </div>
     </div>
   );

@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import Motivation from "../../components/Motivation";
 import contact from "./assets/contact.svg";
 import successImg from "./assets/success.svg"; // ✅ full image modal background
-
+import { useContactUsMutation } from "../../services/allApi";
 const InputField = ({
   placeholder,
   value,
@@ -37,6 +37,7 @@ function Contact() {
   const currentPath = location.pathname;
   const fromMain = currentPath === "/" || currentPath === "/home";
   const isRootContactRoute = currentPath === "/contact";
+  const { data } = useContactUsMutation();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -47,12 +48,24 @@ function Contact() {
   const [showModal, setShowModal] = useState(false);
   const [modalLeaving, setModalLeaving] = useState(false);
 
+  // Use the RTK Query mutation hook
+  const [contactUs, { isLoading, isSuccess, isError, error }] =
+    useContactUsMutation();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSending(true);
-    await new Promise((r) => setTimeout(r, 800)); // simulate delay
-    setIsSending(false);
-    setShowModal(true);
+    const formData = { firstName, lastName, email, phone, message };
+    try {
+      console.log(formData);
+      const response = await contactUs(formData).unwrap();
+      console.log(response);
+      setIsSending(false);
+      setShowModal(true);
+    } catch (err) {
+      setIsSending(false);
+      console.error("Error submitting form:", err);
+    }
   };
 
   const handleCloseModal = () => {

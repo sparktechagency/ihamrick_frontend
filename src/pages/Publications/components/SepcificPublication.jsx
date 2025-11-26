@@ -1,18 +1,25 @@
 import React from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
 import { Share2, Eye } from "lucide-react";
-
+import { useGetPublicationByIdQuery } from "../../../services/allApi";
 const SpecificPublication = () => {
   const { publicationId } = useParams();
-  const { state } = useLocation();
-  const { imageUrl, headline, description, author, publishedDate, pdfLink } =
-    state || {};
+  const { data, error, isLoading } = useGetPublicationByIdQuery(publicationId);
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  const publication = data?.data || {};
+  const {title,author,publicationDate,description,coverImage,file}=publication
+
+  if (error) {
+    return <div>Error loading blog</div>;
+  }
 
   const handleShare = () => {
     if (navigator.share) {
       navigator
         .share({
-          title: headline || "Publication",
+          title: title || "Publication",
           text: description || "",
           url: window.location.href,
         })
@@ -37,7 +44,7 @@ const SpecificPublication = () => {
             ← Back
           </button>
           <h1 className="text-2xl sm:text-3xl font-bold text-center flex-1">
-            {headline}
+            {title}
           </h1>
           <button
             onClick={handleShare}
@@ -50,8 +57,8 @@ const SpecificPublication = () => {
         {/* Publication Image */}
         <div className="mb-8 overflow-hidden rounded-lg shadow-md">
           <img
-            src={imageUrl}
-            alt={headline}
+            src={coverImage}
+            alt={title}
             className="w-full h-auto block object-cover max-w-full"
           />
         </div>
@@ -60,10 +67,10 @@ const SpecificPublication = () => {
         <div className="text-gray-900 text-center">
           {/* Author & Date */}
           <div className="flex flex-col items-center text-sm mb-6 space-y-2">
-            {publishedDate && (
+            {publicationDate && (
               <div className="flex items-center space-x-2">
                 <span className="font-medium">Published:</span>
-                <span>{publishedDate}</span>
+                <span>{publicationDate}</span>
               </div>
             )}
             {author && (
@@ -84,9 +91,9 @@ const SpecificPublication = () => {
             </div>
           )}
 
-          {pdfLink ? (
+          {file ? (
             <a
-              href={pdfLink}
+              href={file}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-8 flex items-center justify-center gap-2 

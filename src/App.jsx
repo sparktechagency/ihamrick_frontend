@@ -26,6 +26,7 @@ function App() {
         <Route path="/publications" element={<Publications />} />
         <Route path="/videos" element={<Videos />} />
         <Route path="/podcasts" element={<Podcasts />} />
+        <Route path="/blogs/:blogId" element={<SpecificBlog />} />
         <Route path="/blog/:blogId" element={<SpecificBlog />} />
         <Route path="/podcasts/:podcastId" element={<SpecificPodcast />} />
         <Route
@@ -33,7 +34,6 @@ function App() {
           element={<SpecificPublication />}
         />
         <Route path="/videos/:videoId" element={<SpecificVideo />} />
-
       </Routes>
       <Footer />
     </Router>

@@ -12,7 +12,7 @@ function Blog() {
 
   useEffect(() => {
     if (data) {
-  
+      console.log(data);
     }
   }, [data]);
 
@@ -20,7 +20,7 @@ function Blog() {
   const currentPath = location.pathname;
   const fromMain = currentPath === "/" || currentPath === "/home";
 
-  const ITEMS_PER_PAGE = 2; // Static number, can be dynamic based on `fromMain`
+  const ITEMS_PER_PAGE = 15; // Static number, can be dynamic based on `fromMain`
   const isRootBlogRoute = currentPath === "/blog";
 
   // Conditional Card Component
@@ -36,7 +36,10 @@ function Blog() {
 
   const totalPages = Math.ceil(data?.meta.total / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentItems = data?.data.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const currentItems = data?.data.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE
+  );
 
   return (
     <div className="flex flex-col items-center py-12 sm:py-16 md:py-24 lg:py-32 min-h-[98vh] relative w-full">

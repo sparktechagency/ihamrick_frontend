@@ -30,6 +30,12 @@ const allApi = createApi({
       query: (publicationId) => `publications/${publicationId}`,
     }),
 
+    getRecordedPodcasts: builder.query({
+      query: () => "/podcasts/recorded",
+    }),
+    getRecordedPodcastById: builder.query({
+      query: (podcastId) => `/podcasts/${podcastId}`,
+    }),
     contactUs: builder.mutation({
       query: (newItem) => ({
         url: "/contact/",
@@ -48,6 +54,8 @@ export const {
   useGetBlogByIdQuery,
   useGetAllPublicationsQuery,
   useGetPublicationByIdQuery,
+  useGetRecordedPodcastsQuery,
+  useGetRecordedPodcastByIdQuery,
   useContactUsMutation,
 } = allApi;
 

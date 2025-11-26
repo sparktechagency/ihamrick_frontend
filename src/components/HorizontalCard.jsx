@@ -49,7 +49,7 @@ export default function HorizontalCard({
       />
 
       <div className="flex-1 px-4 py-3 text-white font-semibold text-sm sm:text-base truncate">
-        {from === "publications" || from === "blog" ? headline : title}
+        {from === "publications" || from === "blogs" ? headline : title}
       </div>
 
 

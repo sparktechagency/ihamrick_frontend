@@ -13,7 +13,7 @@ function Publications() {
   const currentPath = location.pathname;
   const fromMain = currentPath === "/" || currentPath === "/home";
   const isRootPublicationsRoute = currentPath === "/publications";
-  const ITEMS_PER_PAGE = 1;
+  const ITEMS_PER_PAGE = 15;
   const CardComponent = fromMain ? HorizontalCard : PublicationCard;
 
   const [totalPages, setTotalPages] = useState(0);
