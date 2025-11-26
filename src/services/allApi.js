@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
 const allApi = createApi({
   reducerPath: "allApi",
   baseQuery: fetchBaseQuery({
@@ -9,32 +8,38 @@ const allApi = createApi({
     getAllVideos: builder.query({
       query: () => "videos/",
     }),
-
     getAllBlogs: builder.query({
       query: () => "blog/website-blogs",
     }),
-
     getVideoById: builder.query({
       query: (videoId) => `videos/${videoId}`,
     }),
-
     getBlogById: builder.query({
       query: (blogId) => `blog/${blogId}`,
     }),
-
     getAllPublications: builder.query({
       query: () => "publications/website-publications",
     }),
-
     getPublicationById: builder.query({
       query: (publicationId) => `publications/${publicationId}`,
     }),
-
     getRecordedPodcasts: builder.query({
       query: () => "/podcasts/recorded",
     }),
     getRecordedPodcastById: builder.query({
-      query: (podcastId) => `/podcasts/${podcastId}`,
+      query: (podcastId) => `podcasts/${podcastId}`,
+      onQueryStarted: async (podcastId, { queryFulfilled }) => {
+        console.log("Query started for podcastId:", podcastId);
+        try {
+          await queryFulfilled; 
+        } catch (error) {
+          console.error(
+            "Error during the API call for podcastId:",
+            podcastId,
+            error
+          );
+        }
+      },
     }),
     contactUs: builder.mutation({
       query: (newItem) => ({
@@ -45,8 +50,6 @@ const allApi = createApi({
     }),
   }),
 });
-
-// Export the hooks for use in components
 export const {
   useGetAllVideosQuery,
   useGetAllBlogsQuery,
@@ -58,5 +61,4 @@ export const {
   useGetRecordedPodcastByIdQuery,
   useContactUsMutation,
 } = allApi;
-
 export default allApi;
