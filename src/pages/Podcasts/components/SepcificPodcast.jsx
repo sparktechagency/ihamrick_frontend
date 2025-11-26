@@ -1,7 +1,7 @@
-import { useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useRef, useState } from "react";
+import { useParams, Link, useLocation } from "react-router-dom";
 import { Share2 } from "lucide-react";
-import { useEffect } from "react";
+import WomanImage from "../assets/Rectangle.png";
 import {
   Play,
   Pause,
@@ -10,31 +10,19 @@ import {
   RotateCcw,
   RotateCw,
 } from "lucide-react";
-import { useGetRecordedPodcastByIdQuery } from "../../../services/allApi";
+
 const SpecificPodcast = () => {
   const { podcastId } = useParams();
-  console.log(podcastId);
-  console.log("Requested Podcast ID:", podcastId);
-  const { data, error, isLoading } = useGetRecordedPodcastByIdQuery(podcastId);
-
-  useEffect(() => {
-    if (data) {
-      console.log("Podcast data received:", data);
-    }
-    if (error) {
-      console.log("Error fetching podcast data:", error);
-    }
-  }, [data, error]);
-
-  const pd = data;
-  const { _id, title, coverImage, recordedSignedUrl } = pd;
+  const { state } = useLocation(); // ✅ get passed state data
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+
   const togglePlay = () => {
     const audio = audioRef.current;
     if (!audio) return;
+
     if (isPlaying) {
       audio.pause();
     } else {
@@ -60,12 +48,13 @@ const SpecificPodcast = () => {
       duration
     );
   };
+  const { imageUrl, title, description, podcastUrl } = state || {};
   const handleShare = () => {
     if (navigator.share) {
       navigator
         .share({
-          title: { title },
-          text: { description },
+          title: {title},
+          text: {description},
           url: window.location.href,
         })
         .then(() => console.log("Successful share"))
@@ -80,8 +69,9 @@ const SpecificPodcast = () => {
   return (
     <div className="flex flex-col items-center py-20 sm:py-12 md:py-16 lg:py-20 min-h-screen w-full bg-white">
       <div className="max-w-full sm:max-w-4xl md:max-w-6xl lg:max-w-7xl w-full mx-auto p-4 sm:p-6 md:p-8 font-sans leading-relaxed text-sm sm:text-base md:text-lg">
+
         <header className="flex flex-col sm:flex-row items-center justify-between gap-3 py-2 w-full">
-          <button
+            <button
             onClick={() => window.history.back()} // goes back one step in browser history
             className="bg-black text-white rounded-2xl px-4 py-2 font-semibold text-sm shadow hover:bg-gray-900 transition"
           >
@@ -107,7 +97,7 @@ const SpecificPodcast = () => {
     backdrop-blur-sm transition-all duration-300"
           >
             <img
-              src={coverImage}
+              src={imageUrl}
               alt={title}
               className="w-full h-[260px] object-cover rounded-md"
             />
@@ -115,7 +105,7 @@ const SpecificPodcast = () => {
 
             <audio
               ref={audioRef}
-              src={recordedSignedUrl}
+              src={podcastUrl}
               onTimeUpdate={handleTimeUpdate}
               onLoadedMetadata={handleLoadedMetadata}
               onEnded={() => setIsPlaying(false)}
@@ -159,6 +149,14 @@ const SpecificPodcast = () => {
               />
               <span>{duration ? duration.toFixed(2) : "0.00"}</span>
             </div>
+          </div>
+
+          {/* Description Section — same width as player */}
+          <div className="w-[90%] sm:w-[500px] md:w-[650px] lg:w-[800px] text-gray-700">
+            <h3 className="text-base sm:text-lg md:text-xl font-bold mb-1">
+              Description
+            </h3>
+            <p className="m-0 text-sm sm:text-base md:text-lg">{description}</p>
           </div>
         </div>
       </div>

@@ -5,10 +5,11 @@ import PodcastCard from "./components/PodcastCard";
 import HorizontalCard from "../../components/HorizontalCard"; // ✅ Your alternative card
 import Pagination from "../../components/Pagination";
 import { useGetRecordedPodcastsQuery } from "../../services/allApi";
-import { useGetRecordedPodcastByIdQuery } from "../../services/allApi";
+
 function Podcasts() {
   const [currentPage, setCurrentPage] = useState(1);
   const { data, isLoading, error } = useGetRecordedPodcastsQuery();
+  console.log(data)
   const location = useLocation();
   const currentPath = location.pathname;
   const fromMain = currentPath === "/" || currentPath === "/home";
