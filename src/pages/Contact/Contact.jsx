@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Motivation from "../../components/Motivation";
 import contact from "./assets/contact.svg";
 import successImg from "./assets/success.svg"; // ✅ full image modal background
 import { useContactUsMutation } from "../../services/allApi";
+
 const InputField = ({
   placeholder,
   value,
@@ -37,7 +38,6 @@ function Contact() {
   const currentPath = location.pathname;
   const fromMain = currentPath === "/" || currentPath === "/home";
   const isRootContactRoute = currentPath === "/contact";
-  const { data } = useContactUsMutation();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -47,6 +47,7 @@ function Contact() {
   const [isSending, setIsSending] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalLeaving, setModalLeaving] = useState(false);
+  const [successMessage, setSuccessMessage] = useState(""); // State for dynamic success message
 
   // Use the RTK Query mutation hook
   const [contactUs, { isLoading, isSuccess, isError, error }] =
@@ -57,11 +58,17 @@ function Contact() {
     setIsSending(true);
     const formData = { firstName, lastName, email, phone, message };
     try {
-      console.log(formData);
       const response = await contactUs(formData).unwrap();
-      console.log(response);
       setIsSending(false);
+      setSuccessMessage(response.message); // Set success message from API response
       setShowModal(true);
+
+      // Clear input fields after form submission
+      setFirstName("");
+      setLastName("");
+      setEmail("");
+      setPhone("");
+      setMessage("");
     } catch (err) {
       setIsSending(false);
       console.error("Error submitting form:", err);
@@ -85,13 +92,6 @@ function Contact() {
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 text-center w-full">
           Contact
         </h1>
-
-        {/* {fromMain && (
- 
- 
-
-
-        )} */}
       </header>
 
       {/* === Main Content === */}
@@ -166,7 +166,7 @@ function Contact() {
       {/* ✅ Full-Image Modal */}
       {showModal && (
         <div
-          className={`fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md  transition-all duration-500 ${
+          className={`fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md transition-all duration-500 ${
             modalLeaving ? "opacity-0" : "opacity-100"
           }`}
         >
@@ -175,36 +175,32 @@ function Contact() {
               modalLeaving
                 ? "translate-x-full opacity-0"
                 : "translate-x-0 opacity-100"
-            } shadow-2xl
-    shadow-black bg-[#D9D9D9]`}
+            } shadow-2xl shadow-black bg-[#D9D9D9]`}
           >
-            <div>
-              {/* Text above the image */}
-              <div className="w-full text-center  py-4 px-6">
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
-                  Message Sent Successfully!
-                </h2>
-                <p className="text-gray-500 text-sm sm:text-base mt-2">
-                  Thank you for reaching out. We'll get back to you soon.
-                </p>
-              </div>
+            <div className="w-full text-center py-4 px-6">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                Message Sent Successfully!
+              </h2>
+              <p className="text-gray-500 text-sm sm:text-base mt-2">
+                {successMessage
+                  ? successMessage
+                  : "Thank you for reaching out. We'll get back to you soon."}
+              </p>
+            </div>
 
-              {/* Full image */}
-              <img
-                src={successImg}
-                alt="Success"
-                className="w-full object-cover flex-1 rounded-b-3xl"
-              />
+            <img
+              src={successImg}
+              alt="Success"
+              className="w-full object-cover flex-1 rounded-b-3xl"
+            />
 
-              {/* Button below the image */}
-              <div className="w-full flex justify-center py-4">
-                <button
-                  onClick={handleCloseModal}
-                  className="bg-black text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg text-base sm:text-lg font-semibold hover:bg-gray-800 transition duration-300 shadow-md"
-                >
-                  Okay
-                </button>
-              </div>
+            <div className="w-full flex justify-center py-4">
+              <button
+                onClick={handleCloseModal}
+                className="bg-black text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg text-base sm:text-lg font-semibold hover:bg-gray-800 transition duration-300 shadow-md"
+              >
+                Okay
+              </button>
             </div>
           </div>
         </div>

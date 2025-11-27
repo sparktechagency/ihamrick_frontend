@@ -11,15 +11,6 @@ const PublicationCard = ({
   pdfLink,
 }) => {
   useEffect(() => {
-    console.log(
-      id,
-      imageUrl,
-      headline,
-      author,
-      publishedDate,
-      description,
-      pdfLink
-    );
   }, [id]); // Empty dependency array ensures it runs once after the first render
 
   return (

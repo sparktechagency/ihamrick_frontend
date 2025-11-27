@@ -12,6 +12,8 @@ import ScrollToTop from "./components/ScrollToTop";
 import SpecificBlog from "./pages/Blog/components/SpecificBlog";
 import SpecificPodcast from "./pages/Podcasts/components/SepcificPodcast";
 import SpecificPublication from "./pages/Publications/components/SepcificPublication";
+import AllLives from "./pages/Live/allLives";
+import SepcificLive from "./pages/Live/SepcificLive";
 import SpecificVideo from "./pages/Videos/components/SepcificVideo";
 function App() {
   return (
@@ -34,7 +36,10 @@ function App() {
           element={<SpecificPublication />}
         />
         <Route path="/videos/:videoId" element={<SpecificVideo />} />
+        <Route path="/live" element={<AllLives />} />
+        <Route path="/live/:liveId" element={<SepcificLive />} />
       </Routes>
+      
       <Footer />
     </Router>
   );

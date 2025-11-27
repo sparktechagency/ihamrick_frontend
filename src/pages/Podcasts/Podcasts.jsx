@@ -9,7 +9,6 @@ import { useGetRecordedPodcastsQuery } from "../../services/allApi";
 function Podcasts() {
   const [currentPage, setCurrentPage] = useState(1);
   const { data, isLoading, error } = useGetRecordedPodcastsQuery();
-  console.log(data)
   const location = useLocation();
   const currentPath = location.pathname;
   const fromMain = currentPath === "/" || currentPath === "/home";

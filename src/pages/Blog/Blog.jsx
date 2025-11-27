@@ -12,7 +12,6 @@ function Blog() {
 
   useEffect(() => {
     if (data) {
-      console.log(data);
     }
   }, [data]);
 

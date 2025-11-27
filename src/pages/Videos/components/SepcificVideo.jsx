@@ -50,9 +50,16 @@ const SpecificVideo = () => {
 
   const { data, isLoading, error } = useGetVideoByIdQuery(videoId);
   const vd = data?.data || {};
-  const { _id, title, description, transcription, signedUrl, thumbnailUrl, uploadDate, views } = vd;
-
-  // --- Video Controls ---
+  const {
+    _id,
+    title,
+    description,
+    transcription,
+    signedUrl,
+    thumbnailUrl,
+    uploadDate,
+    views,
+  } = vd;
   const handlePlayPause = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -121,9 +128,10 @@ const SpecificVideo = () => {
   const handleTimeUpdate = () => {
     const video = videoRef.current;
     if (video && !isSeeking) {
-      const newProgress = (video.currentTime / video.duration) * 100;
-      setProgress(newProgress);
-      setCurrentTime(video.currentTime);
+      // Don't update if seeking
+      const newProgress = (video.currentTime / video.duration) * 100; // Calculate progress percentage
+      setProgress(newProgress); // Update progress bar width
+      setCurrentTime(video.currentTime); // Update the current time displayed
     }
   };
 
@@ -135,31 +143,38 @@ const SpecificVideo = () => {
   };
 
   const handleSeekStart = (e) => {
-    setIsSeeking(true);
-    handleSeeking(e);
+    setIsSeeking(true); // Start seeking
+    handleSeeking(e); // Update seek progress immediately
   };
 
   const handleSeeking = (e) => {
     if (!isSeeking) return;
-    const bar = e.currentTarget.parentNode;
+
+    const bar = e.currentTarget.parentNode; // The parent node is the progress bar container
     const rect = bar.getBoundingClientRect();
     let clickX = e.clientX - rect.left;
-    clickX = Math.max(0, Math.min(rect.width, clickX));
-    const percent = clickX / rect.width;
-    setSeekProgress(percent * 100);
-    setCurrentTime(percent * duration);
+    clickX = Math.max(0, Math.min(rect.width, clickX)); // Ensure the click position is within bounds
+    const percent = clickX / rect.width; // Calculate the percentage clicked
+
+    setSeekProgress(percent * 100); // Set the visual seek progress (preview)
+    setCurrentTime(percent * duration); // Set the video's current time
   };
 
   const handleSeekEnd = (e) => {
     if (!isSeeking) return;
+
     const bar = e.currentTarget.parentNode;
     const rect = bar.getBoundingClientRect();
     let clickX = e.clientX - rect.left;
-    clickX = Math.max(0, Math.min(rect.width, clickX));
-    const percent = clickX / rect.width;
-    if (videoRef.current) videoRef.current.currentTime = percent * duration;
-    setProgress(percent * 100);
-    setIsSeeking(false);
+    clickX = Math.max(0, Math.min(rect.width, clickX)); // Ensure the click position is within bounds
+    const percent = clickX / rect.width; // Calculate the percentage clicked
+
+    if (videoRef.current) {
+      videoRef.current.currentTime = percent * duration; // Set the video's time
+    }
+
+    setProgress(percent * 100); // Update the visual progress bar
+    setIsSeeking(false); // Stop seeking
   };
 
   const handleMouseMove = useCallback(
@@ -320,10 +335,9 @@ const SpecificVideo = () => {
                   showControls || isPlaying ? "opacity-100" : "opacity-0"
                 } ${isFullScreen ? "p-6" : ""}`}
               >
-                {/* Progress */}
                 <div
                   className="w-full h-1 bg-gray-600 rounded-full mb-2 sm:mb-3 relative group cursor-pointer"
-                  onMouseDown={handleSeekStart}
+                  onMouseDown={handleSeekStart} // Start seeking when mouse is pressed
                 >
                   <div
                     className="h-1 bg-red-600 rounded-full"
@@ -337,8 +351,6 @@ const SpecificVideo = () => {
                     }}
                   />
                 </div>
-
-                {/* Controls */}
                 <div className="flex flex-wrap justify-between items-center text-white text-sm gap-2">
                   <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                     <button
@@ -431,7 +443,8 @@ const SpecificVideo = () => {
             <strong>Views:</strong> {views}
           </p>
           <p>
-            <strong>Uploaded on:</strong> {new Date(uploadDate).toLocaleDateString()}
+            <strong>Uploaded on:</strong>{" "}
+            {new Date(uploadDate).toLocaleDateString()}
           </p>
         </div>
 

@@ -29,9 +29,8 @@ const allApi = createApi({
     getRecordedPodcastById: builder.query({
       query: (podcastId) => `podcasts/${podcastId}`,
       onQueryStarted: async (podcastId, { queryFulfilled }) => {
-        console.log("Query started for podcastId:", podcastId);
         try {
-          await queryFulfilled; 
+          await queryFulfilled;
         } catch (error) {
           console.error(
             "Error during the API call for podcastId:",
@@ -40,6 +39,12 @@ const allApi = createApi({
           );
         }
       },
+    }),
+    getAllPodcast: builder.query({
+      query: () => "/podcasts",
+    }),
+    getLivePodcasts: builder.query({
+      query: (liveId) => `/podcasts/${liveId}`,
     }),
     contactUs: builder.mutation({
       query: (newItem) => ({
@@ -59,6 +64,8 @@ export const {
   useGetPublicationByIdQuery,
   useGetRecordedPodcastsQuery,
   useGetRecordedPodcastByIdQuery,
+  useGetAllPodcastQuery,
+  useGetLivePodcastsQuery,
   useContactUsMutation,
 } = allApi;
 export default allApi;

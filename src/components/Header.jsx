@@ -11,8 +11,6 @@ import PublicationsIcon from "../assets/Header/publications.svg";
 import SearchIcon from "../assets/Header/search.svg";
 import VideosIcon from "../assets/Header/videos.svg";
 
-// ...imports remain the same
-
 function Header() {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -37,15 +35,14 @@ function Header() {
     setActiveTab(getActiveTab());
   }, [location.pathname]);
 
-const headerBg =
-  location.pathname === "/" || location.pathname === "/home"
-    ? "bg-transparent"
-    : "bg-white"; 
+  const headerBg =
+    location.pathname === "/" || location.pathname === "/home"
+      ? "bg-transparent"
+      : "bg-white";
 
   return (
-<header className={`fixed top-0 left-0 w-full z-[9999] px-4 py-6 transition-colors duration-300 ${headerBg}`}>
+    <header className={`fixed top-0 left-0 w-full z-[9999] px-4 py-6 transition-colors duration-300 ${headerBg}`}>
       <div className="flex items-center justify-between w-full">
-      
         <div className="w-24 h-8 flex-shrink-0">
           <Link to="/home">
             <img src={LogoIcon} alt="Logo" className="w-full h-full object-contain" />
@@ -112,9 +109,33 @@ const headerBg =
           })}
         </div>
       </div>
+
+      {/* Glowing Floating "Live" Button */}
+      <Link
+        to="/live" // Replace with the actual path for the live page
+        className="fixed bottom-8 right-8 bg-red-600 text-white py-3 px-6 rounded-full shadow-lg text-lg hover:bg-red-700 transition duration-300 ease-in-out transform hover:scale-105"
+      >
+        Live
+      </Link>
+
+      {/* Glowing Effect using Tailwind */}
+      <style jsx >{`
+        .glowing-button {
+          box-shadow: 0 0 15px rgba(255, 0, 0, 0.6), 0 0 30px rgba(255, 0, 0, 0.4);
+          animation: glow-animation 1.5s infinite alternate;
+        }
+
+        @keyframes glow-animation {
+          0% {
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.6), 0 0 30px rgba(255, 0, 0, 0.4);
+          }
+          100% {
+            box-shadow: 0 0 25px rgba(255, 0, 0, 1), 0 0 45px rgba(255, 0, 0, 0.6);
+          }
+        }
+      `}</style>
     </header>
   );
 }
 
 export default Header;
-
