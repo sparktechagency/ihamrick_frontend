@@ -35,7 +35,7 @@ const SpecificPodcast = () => {
 
   // Handles connecting to the podcast
   const joinPodcast = () => {
-    const serverUrl = "http://10.10.20.73:5005"; // Replace with your server URL
+    const serverUrl = "https://ihamrick.onrender.com"; // Replace with your server URL
     const podcastId = liveId;
 
     if (!podcastId) return setConnectionStatus("Podcast ID is required");
