@@ -10,11 +10,18 @@ import PodcastsIcon from "../assets/Header/podcasts.svg";
 import PublicationsIcon from "../assets/Header/publications.svg";
 import SearchIcon from "../assets/Header/search.svg";
 import VideosIcon from "../assets/Header/videos.svg";
+import { useGetSearchResultsQuery } from "../services/allApi";
 
 function Header() {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("Home");
+  const [searchKeyword, setSearchKeyword] = useState(""); // For capturing search input
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false); // Modal state
+
+  const { data, error, isLoading } = useGetSearchResultsQuery(searchKeyword, {
+    skip: !searchKeyword, // Skip the query if no keyword
+  });
 
   const menuItems = [
     { name: "Home", icon: HomeIcon, path: "/home" },
@@ -35,22 +42,59 @@ function Header() {
     setActiveTab(getActiveTab());
   }, [location.pathname]);
 
+  // Close modal on navigation change
+  useEffect(() => {
+    setIsSearchModalOpen(false); // Close the modal whenever the location changes (page navigation)
+  }, [location]);
+
   const headerBg =
     location.pathname === "/" || location.pathname === "/home"
       ? "bg-transparent"
       : "bg-white";
 
+  const handleSearchChange = (e) => {
+    setSearchKeyword(e.target.value); // Update keyword on input change
+  };
+
+  // Function to open the search modal
+  const openSearchModal = () => {
+    setIsSearchModalOpen(true);
+  };
+
+  // Function to close the search modal
+  const closeSearchModal = () => {
+    setIsSearchModalOpen(false);
+  };
+
   return (
-    <header className={`fixed top-0 left-0 w-full z-[9999] px-4 py-6 transition-colors duration-300 ${headerBg}`}>
+    <header
+      className={`fixed top-0 left-0 w-full z-[9999] px-4 py-6 transition-colors duration-300 ${headerBg}`}
+    >
       <div className="flex items-center justify-between w-full">
         <div className="w-24 h-8 flex-shrink-0">
           <Link to="/home">
-            <img src={LogoIcon} alt="Logo" className="w-full h-full object-contain" />
+            <img
+              src={LogoIcon}
+              alt="Logo"
+              className="w-full h-full object-contain"
+            />
           </Link>
         </div>
         <div className="hidden lg:flex ml-auto mr-10 rounded-lg border h-8 p-1 items-center w-40 md:w-56 lg:w-64 flex-shrink-0">
-          <input type="text" placeholder="Search..." className="w-full outline-none px-2 text-sm bg-transparent" aria-label="Search" />
-          <img src={SearchIcon} alt="Search Icon" className="w-5 h-5 opacity-60 flex-shrink-0" />
+          <input
+            type="text"
+            placeholder="Search..."
+            className="w-full outline-none px-2 text-sm bg-transparent"
+            value={searchKeyword}
+            onChange={handleSearchChange} // Handle input change
+            aria-label="Search"
+          />
+          <img
+            src={SearchIcon}
+            alt="Search Icon"
+            className="w-5 h-5 opacity-60 flex-shrink-0 cursor-pointer"
+            onClick={openSearchModal} // Open modal on click
+          />
         </div>
 
         <nav className="hidden lg:flex items-center">
@@ -118,22 +162,85 @@ function Header() {
         Live
       </Link>
 
-      {/* Glowing Effect using Tailwind */}
-      <style jsx >{`
-        .glowing-button {
-          box-shadow: 0 0 15px rgba(255, 0, 0, 0.6), 0 0 30px rgba(255, 0, 0, 0.4);
-          animation: glow-animation 1.5s infinite alternate;
-        }
+      {/* Search Modal */}
+      {isSearchModalOpen && (
+        <div className="fixed inset-0 backdrop-blur-sm bg-opacity-50 flex justify-center items-center z-[999999]">
+          <div className="bg-white rounded-lg p-6 w-96 h-96 md:w-128 lg:w-144 max-h-[900px] overflow-y-auto shadow-lg">
+            <div className="flex justify-between items-center mb-4">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="w-full outline-none px-2 text-sm"
+                value={searchKeyword}
+                onChange={handleSearchChange}
+                aria-label="Search"
+              />
+              <button
+                onClick={closeSearchModal}
+                className="text-gray-700 text-xl"
+              >
+                X
+              </button>
+            </div>
 
-        @keyframes glow-animation {
-          0% {
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.6), 0 0 30px rgba(255, 0, 0, 0.4);
-          }
-          100% {
-            box-shadow: 0 0 25px rgba(255, 0, 0, 1), 0 0 45px rgba(255, 0, 0, 0.6);
-          }
-        }
-      `}</style>
+            {isLoading && <p>Loading...</p>}
+            {error && <p className="text-red-600">Error fetching results!</p>}
+
+            {/* Display search results */}
+            {data && data.data.results && data.data.results.length > 0 ? (
+              <div>
+                <h3 className="font-semibold text-lg mb-2">Search Results</h3>
+                <div className="space-y-4">
+                  {data.data.results.map((result) => (
+                    <div key={result.id} className="flex space-x-4 bg-gray-100 p-4 rounded-md shadow-sm hover:shadow-lg transition-shadow">
+                      {/* Render image, title, and description based on result type */}
+                      {result.type === "video" && (
+                        <img
+                          src={result.thumbnailUrl || "/default-thumbnail.jpg"}
+                          alt={result.title}
+                          className="w-24 h-24 object-cover rounded-md"
+                        />
+                      )}
+                      {result.type === "blog" && (
+                        <img
+                          src={result.coverImage || "/default-thumbnail.jpg"}
+                          alt={result.title}
+                          className="w-24 h-24 object-cover rounded-md"
+                        />
+                      )}
+                      {result.type === "podcast" && (
+                        <div className="w-24 h-24 bg-gray-200 rounded-md flex items-center justify-center">
+                          <span className="text-center text-lg">🎙️</span>
+                        </div>
+                      )}
+                      {result.type === "publication" && (
+                        <div className="w-24 h-24 bg-gray-200 rounded-md flex items-center justify-center">
+                          <span className="text-center text-lg">📖</span>
+                        </div>
+                      )}
+
+                      <div className="flex flex-col">
+                        <Link
+                          to={`/${result.type}/${result.id}`}
+                          className="text-blue-600 hover:underline font-medium text-base"
+                        >
+                          {result.highlights.title}
+                        </Link>
+                        <p className="text-sm text-gray-600">{result.highlights.description}</p>
+                        <p className="text-xs text-gray-500">
+                          Relevance Score: {result.relevanceScore}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <p>No results found for "{searchKeyword}".</p>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 }

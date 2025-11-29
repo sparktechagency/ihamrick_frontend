@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
-// Global variable to track the currently playing audio
 let currentAudio = null;
 let currentCardId = null;
 
@@ -19,7 +18,6 @@ const PodcastCard = ({ id, imageUrl, title, description, podcastUrl }) => {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
-  // Listen to global "podcastPlay" events
   useEffect(() => {
     const handleOtherPlay = (e) => {
       if (e.detail.id !== id && isPlaying) {
@@ -132,25 +130,6 @@ const PodcastCard = ({ id, imageUrl, title, description, podcastUrl }) => {
         <button onClick={(e) => skip(10, e)} className="hover:text-gray-700">
           <RotateCw size={18} />
         </button>
-      </div>
-
-      <div className="flex items-center gap-4 w-full mt-2 text-xs text-gray-700">
-        <span>{formatTime(currentTime)}</span>
-        <input
-          type="range"
-          min="0"
-          max={duration || 0}
-          step="0.01"
-          value={currentTime}
-          onChange={(e) => {
-            const newTime = parseFloat(e.target.value);
-            audioRef.current.currentTime = newTime;
-            setCurrentTime(newTime);
-          }}
-          onClick={(e) => e.stopPropagation()}
-          className="flex-grow accent-black cursor-pointer"
-        />
-        <span>{formatTime(duration)}</span>
       </div>
     </div>
   );

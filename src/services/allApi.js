@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 const allApi = createApi({
   reducerPath: "allApi",
   baseQuery: fetchBaseQuery({
@@ -53,8 +54,16 @@ const allApi = createApi({
         body: newItem,
       }),
     }),
+    getSearchResults: builder.query({
+      query: (keyword) => `/search/?keyword=${keyword}`,
+    }),
+    // Added life-suggestions API
+    getLifeSuggestions: builder.query({
+      query: () => "life-suggestions/",
+    }),
   }),
 });
+
 export const {
   useGetAllVideosQuery,
   useGetAllBlogsQuery,
@@ -67,5 +76,8 @@ export const {
   useGetAllPodcastQuery,
   useGetLivePodcastsQuery,
   useContactUsMutation,
+  useGetSearchResultsQuery,
+  useGetLifeSuggestionsQuery, // Exported hook for the new API
 } = allApi;
+
 export default allApi;

@@ -1,5 +1,5 @@
 import React from "react";
-import { Play, Pause, SkipBack, SkipForward } from "lucide-react";
+import { Play, Pause } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const LiveCard = ({
@@ -27,8 +27,13 @@ const LiveCard = ({
 
   return (
     <div className="relative bg-green-200 rounded-xl p-6 flex flex-col items-center shadow-lg hover:shadow-2xl transition-all duration-300">
-      <div className="p-2 mb-2 bg-red-500 text-white rounded-4xl hover:bg-blue-700 ">{liveStatus}</div>
-      <Link to={`/live/${liveId}`} className="w-full text-center">
+      <div className="p-2 mb-2 bg-red-500 text-white rounded-4xl hover:bg-blue-700 ">
+        {liveStatus}
+      </div>
+      <Link
+        to={`/live/${liveId}?imageUrl=${encodeURIComponent(imageUrl)}&title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}&liveStreamUrl=${encodeURIComponent(liveStreamUrl)}&liveStatus=${encodeURIComponent(liveStatus)}`}
+        className="w-full text-center"
+      >
         <img
           src={imageUrl}
           alt={title}
@@ -45,7 +50,6 @@ const LiveCard = ({
         >
           {isPlaying ? <Pause size={24} /> : <Play size={24} />}
         </button>
-
       </div>
     </div>
   );

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import LiveCard from "./LiveCard"; // Import the LiveCard component
 import { useGetAllPodcastQuery } from "../../services/allApi"; // Assuming you are using a service to fetch podcasts
 
@@ -22,14 +21,11 @@ const AllLives = () => {
         title: event.title,
         description: event.description || "No description available",
         imageUrl: event.coverImage || "https://via.placeholder.com/300",
-        liveStreamUrl:
-          event.streamConfig?.playbackUrl || "https://via.placeholder.com/300",
         liveStatus: event.status,
       }));
       setLiveEvents(formattedLiveEvents);
     }
   }, [data]);
-
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -53,7 +49,6 @@ const AllLives = () => {
             imageUrl={event.imageUrl}
             title={event.title}
             description={event.description}
-            liveStreamUrl={event.liveStreamUrl}
             liveStatus={event.liveStatus}
           />
         ))}

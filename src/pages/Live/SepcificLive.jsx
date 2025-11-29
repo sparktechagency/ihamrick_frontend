@@ -1,338 +1,238 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
+import { Share2 } from "lucide-react";
+import { Play, Pause } from "lucide-react";
 import io from "socket.io-client";
 
-const SpecificLive = () => {
-  const [socket, setSocket] = useState(null);
-  const [audioContext, setAudioContext] = useState(null);
-  const [gainNode, setGainNode] = useState(null);
-  const [currentVolume, setCurrentVolume] = useState(1.0);
-  const [podcastId, setPodcastId] = useState("");
-  const [userId, setUserId] = useState("");
-  const [status, setStatus] = useState("Not Connected");
-  const [audioStatus, setAudioStatus] = useState("Waiting for audio...");
-  const [listeners, setListeners] = useState(0);
-  const [peakListeners, setPeakListeners] = useState(0);
+const SpecificPodcast = () => {
+  const { liveId } = useParams();
+  const { search, state } = useLocation();
+
+  // Parse query parameters or use fallback values
+  const queryParams = new URLSearchParams(search);
+  const imageUrl = queryParams.get("imageUrl") || state?.imageUrl || "https://via.placeholder.com/150";
+  const title = queryParams.get("title") || state?.title || "Untitled Podcast";
+  const description = queryParams.get("description") || state?.description || "No description available";
+  const podcastUrl = queryParams.get("liveStreamUrl") || state?.liveStreamUrl || "#";
+
+  // Audio and WebSocket-related state and references
+  const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const audioQueueRef = useRef([]); // Using a ref for the audio queue
+  const [connectionStatus, setConnectionStatus] = useState("Disconnected");
+  const [listenerCount, setListenerCount] = useState(0);
 
+  // WebSocket and MediaSource references
+  let socket = useRef(null);
+  let mediaSource = useRef(null);
+  let sourceBuffer = useRef(null);
+  let queue = useRef([]);
+  let isBufferUpdating = useRef(false);
+
+  // Join the podcast on component mount (when liveId is available)
   useEffect(() => {
-    initAudioContext(); // Initialize AudioContext when the component mounts
-  }, []);
+    if (liveId) joinPodcast();  // If liveId is available, join the podcast
+  }, [liveId]);
 
-  // Initialize AudioContext and GainNode when the component mounts
-  const initAudioContext = () => {
-    if (!audioContext) {
-      const context = new (window.AudioContext || window.webkitAudioContext)();
-      const node = context.createGain();
-      node.gain.value = currentVolume;
-      node.connect(context.destination); // Connect the gain node to the speakers
-      setAudioContext(context);
-      setGainNode(node);
-      console.log("AudioContext Initialized");
-    }
-  };
+  // Handles connecting to the podcast
+  const joinPodcast = () => {
+    const serverUrl = "http://10.10.20.73:5005"; // Replace with your server URL
+    const podcastId = liveId;
 
-  const updateStatus = (message, type = "info") => {
-    setStatus(message);
-  };
+    if (!podcastId) return setConnectionStatus("Podcast ID is required");
 
-  const updateAudioStatus = (message, isPlaying = false) => {
-    setAudioStatus(message);
-    if (isPlaying) {
-      setAudioStatus((prev) => `${prev} (Playing)`);
-    }
-  };
+    setConnectionStatus("Connecting...");
+    setListenerCount(0);
 
-  const handleVolumeChange = (e) => {
-    const volume = e.target.value / 100;
-    setCurrentVolume(volume);
-    if (gainNode) {
-      gainNode.gain.value = volume;
-    }
-  };
+    queue.current = [];
+    mediaSource.current = new MediaSource();
+    audioRef.current.src = URL.createObjectURL(mediaSource.current);
 
-  const joinPodcast = async () => {
-    try {
-      const serverUrl = "http://10.10.20.73:5005"; // Replace with your server URL
-      if (!podcastId) {
-        alert("Please enter Podcast ID");
-        return;
+    mediaSource.current.addEventListener("sourceopen", () => {
+      setConnectionStatus("Connected. Waiting for audio...");
+      socket.current.emit("join-podcast", { podcastId });
+    });
+
+    socket.current = io(`${serverUrl}/podcast`, {
+      transports: ["websocket"],
+    });
+
+    socket.current.on("connect", () => {
+      setConnectionStatus("Connected");
+    });
+
+    socket.current.on("joined-podcast", (data) => {
+      setListenerCount(data.currentListeners);
+      setConnectionStatus(`Joined! Listeners: ${data.currentListeners}`);
+    });
+
+    socket.current.on("listener-update", (data) => {
+      setListenerCount(data.currentListeners);
+    });
+
+    socket.current.on("audio-stream", async (data) => {
+      const binaryString = window.atob(data.audioChunk);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
       }
 
-      updateStatus("Connecting to server...", "info");
+      queue.current.push(bytes.buffer);
+      processQueue();
+    });
 
-      const socketInstance = io(`${serverUrl}/podcast`, {
-        transports: ["websocket", "polling"],
-        reconnection: true,
-        reconnectionAttempts: 5,
-        reconnectionDelay: 1000,
-      });
+    socket.current.on("podcast-ended", () => {
+      setConnectionStatus("Podcast ended");
+      leavePodcast();
+    });
 
-      setSocket(socketInstance);
+    socket.current.on("disconnect", () => {
+      setConnectionStatus("Disconnected");
+    });
+  };
 
-      socketInstance.on("connect", () => {
-        updateStatus("Connected. Joining podcast room...", "success");
-        socketInstance.emit("join-podcast", {
-          podcastId,
-          userId: userId || undefined,
+  // Initializes the SourceBuffer for the MediaSource
+  const initSourceBuffer = (mimeType) => {
+    if (sourceBuffer.current || mediaSource.current.readyState !== "open") return;
+
+    if (MediaSource.isTypeSupported(mimeType)) {
+      try {
+        sourceBuffer.current = mediaSource.current.addSourceBuffer(mimeType);
+        sourceBuffer.current.mode = "sequence";
+        sourceBuffer.current.addEventListener("updateend", () => {
+          isBufferUpdating.current = false;
+          processQueue();
         });
-      });
+      } catch (e) {
+        setConnectionStatus(`Error initializing audio: ${e.message}`, "error");
+      }
+    } else {
+      setConnectionStatus(`Browser does not support ${mimeType}`, "error");
+    }
+  };
 
-      socketInstance.on("joined-podcast", (data) => {
-        updateStatus("✅ Joined podcast room", "success");
-        setListeners(data.currentListeners);
-        updateAudioStatus("Waiting for admin to broadcast...");
-      });
+  // Process the queue of audio chunks
+  const processQueue = () => {
+    if (mediaSource.current.readyState !== "open") return;
+    if (!sourceBuffer.current) {
+      initSourceBuffer('audio/webm; codecs="opus"');
+      return;
+    }
 
-      socketInstance.on("listener-update", (data) => {
-        setListeners(data.currentListeners);
-        setPeakListeners(data.peakListeners);
-      });
+    if (
+      queue.current.length > 0 &&
+      !isBufferUpdating.current &&
+      !sourceBuffer.current.updating
+    ) {
+      try {
+        const chunk = queue.current.shift();
+        sourceBuffer.current.appendBuffer(chunk);
+        isBufferUpdating.current = true;
+      } catch (e) {
+        setConnectionStatus("Stream error: MediaSource closed. Please rejoin.", "error");
+      }
+    }
+  };
 
-      socketInstance.on("audio-stream", async (data) => {
-        try {
-          // Ensure audioContext is initialized before proceeding
-          if (!audioContext) {
-            console.error("AudioContext not initialized. Initializing now...");
-            initAudioContext(); // Initialize audio context if not already done
-          }
-
-          if (!audioContext) {
-            throw new Error("AudioContext is still null, cannot process audio.");
-          }
-
-          // Decode base64 to binary string
-          let binaryString = atob(data.audioChunk);
-          const byteLength = binaryString.length;
-
-          // Ensure the byte length is a multiple of 2 (Int16 requires 2 bytes per sample)
-          if (byteLength % 2 !== 0) {
-            console.error(
-              "Audio chunk length is not a multiple of 2, trimming extra byte"
-            );
-            binaryString = binaryString.slice(0, byteLength - 1); // Remove the last byte if it's not aligned
-          }
-
-          const bytes = new Uint8Array(binaryString.length);
-          for (let i = 0; i < binaryString.length; i++) {
-            bytes[i] = binaryString.charCodeAt(i);
-          }
-
-          // Create Int16Array from the bytes (each sample is 2 bytes)
-          const int16Array = new Int16Array(bytes.buffer);
-
-          // Convert Int16 PCM to Float32 for Web Audio API
-          const float32Array = new Float32Array(int16Array.length);
-          for (let i = 0; i < int16Array.length; i++) {
-            float32Array[i] =
-              int16Array[i] / (int16Array[i] < 0 ? 0x8000 : 0x7fff);
-          }
-
-          const sampleRate = data.sampleRate || 48000;
-          const channels = data.channels || 1;
-          const audioBuffer = audioContext.createBuffer(
-            channels,
-            float32Array.length,
-            sampleRate
-          );
-          audioBuffer.getChannelData(0).set(float32Array);
-
-          // Add the audioBuffer to the queue
-          audioQueueRef.current.push(audioBuffer);
-
-          // Update UI status
-          updateAudioStatus(
-            `🎵 Receiving audio • Queue: ${audioQueueRef.current.length}`,
-            true
-          );
-
-          // Play the audio if not already playing
-          if (!isPlaying) {
-            playNextBuffer();
-          }
-        } catch (error) {
-          console.error("Error processing audio:", error);
-          updateAudioStatus("❌ Error: " + error.message);
-        }
-      });
-
-      socketInstance.on("podcast-started", () => {
-        updateAudioStatus("📡 Broadcast started, waiting for audio...");
-      });
-
-      socketInstance.on("disconnect", (reason) => {
-        updateStatus("Disconnected: " + reason, "error");
-        updateAudioStatus("Disconnected from server");
-      });
-
+  // Handle the play/pause toggle
+  const togglePlay = () => {
+    if (audioRef.current.paused) {
+      audioRef.current.play().then(() => setIsPlaying(true));
+    } else {
+      audioRef.current.pause();
       setIsPlaying(false);
-    } catch (error) {
-      updateStatus("Error: " + error.message, "error");
     }
   };
 
   const leavePodcast = () => {
-    if (socket) {
-      socket.emit("leave-podcast", { podcastId });
-      socket.disconnect();
+    if (socket.current) socket.current.disconnect();
+    if (mediaSource.current && mediaSource.current.readyState === "open") {
+      try {
+        mediaSource.current.endOfStream();
+      } catch (e) {}
     }
 
-    if (audioContext) {
-      audioContext.close();
-      setAudioContext(null);
-      setGainNode(null);
-    }
-
-    setIsPlaying(false);
-    setListeners(0);
-    setPeakListeners(0);
-    updateStatus("Left podcast", "info");
-    updateAudioStatus("Not listening");
+    setConnectionStatus("Disconnected");
+    setListenerCount(0);
+    queue.current = [];
+    sourceBuffer.current = null;
+    mediaSource.current = null;
+    audioRef.current.src = "";
+    // Navigate back to the previous page
+    window.history.back();
   };
 
-  // Function to process and play the next audio buffer
-  const playNextBuffer = () => {
-    if (audioQueueRef.current.length === 0) {
-      setIsPlaying(false);
-      updateAudioStatus("⏸️ Waiting for more audio...", false);
-      return;
-    }
+  const handleTimeUpdate = () => {
+    setCurrentTime(audioRef.current.currentTime);
+  };
 
-    setIsPlaying(true);
-    const audioBuffer = audioQueueRef.current.shift(); // Get the next audio buffer from the ref
-
-    const source = audioContext.createBufferSource();
-    source.buffer = audioBuffer;
-    source.connect(gainNode);
-
-    source.onended = () => {
-      playNextBuffer(); // Keep playing audio buffers when the current one ends
-    };
-
-    const now = audioContext.currentTime;
-    source.start(now); // Start playing the audio
+  const handleLoadedMetadata = () => {
+    setDuration(audioRef.current.duration);
   };
 
   return (
-    <div
-      style={{
-        maxWidth: "1000px",
-        margin: "50px auto",
-        padding: "30px",
-        backgroundColor: "white",
-        borderRadius: "10px",
-        boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.1)",
-      }}
-    >
-      <h1 style={{ textAlign: "center", color: "#333", fontSize: "2em" }}>
-        🎧 Live Audio Listener
-      </h1>
+    <div className="flex flex-col items-center py-20 sm:py-12 md:py-16 lg:py-20 min-h-screen w-full bg-white">
+      <div className="max-w-full sm:max-w-4xl md:max-w-6xl lg:max-w-7xl w-full mx-auto p-4 sm:p-6 md:p-8 font-sans leading-relaxed text-sm sm:text-base md:text-lg">
+        <header className="flex flex-col sm:flex-row items-center justify-between gap-3 py-2 w-full">
+          <button
+            onClick={() => window.history.back()}
+            className="bg-black text-white rounded-2xl px-4 py-2 font-semibold text-sm shadow hover:bg-gray-900 transition"
+          >
+            ← Back
+          </button>
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-center flex-1">
+            {title}
+          </h1>
+          <button className="text-black hover:text-gray-700 transition">
+            <Share2 size={24} />
+          </button>
+        </header>
 
-      <div style={{ marginBottom: "20px" }}>
-        <label htmlFor="podcastId" style={{ fontWeight: "bold", color: "#444" }}>
-          Podcast ID:
-        </label>
-        <input
-          type="text"
-          id="podcastId"
-          value={podcastId}
-          onChange={(e) => setPodcastId(e.target.value)}
-          placeholder="Enter podcast ID"
-          style={{
-            width: "100%",
-            padding: "12px",
-            fontSize: "1em",
-            marginTop: "5px",
-            borderRadius: "8px",
-            border: "1px solid #ddd",
-            backgroundColor: "#f5f5f5",
-          }}
-        />
-      </div>
+        <div className="my-10 flex flex-col items-center gap-8">
+          <div className="w-[90%] sm:w-[500px] md:w-[650px] lg:w-[800px] h-[400px] sm:h-[450px] md:h-[500px] bg-green-200 rounded-2xl p-6 flex flex-col items-center justify-center shadow-2xl backdrop-blur-sm transition-all duration-300">
+            <img
+              src={imageUrl}
+              alt={title}
+              className="w-full h-[260px] object-cover rounded-md"
+            />
+            <h2 className="text-black font-semibold text-sm mt-2">“{title}”</h2>
+            <audio
+              ref={audioRef}
+              onTimeUpdate={handleTimeUpdate}
+              onLoadedMetadata={handleLoadedMetadata}
+              controls
+            />
+            <div className="flex items-center justify-center gap-3 mt-2 text-black">
+              <button
+                onClick={togglePlay}
+                className="p-2 bg-black text-white rounded-full hover:bg-gray-800"
+              >
+                {isPlaying ? <Pause size={18} /> : <Play size={18} />}
+              </button>
+              <button
+                onClick={leavePodcast}
+                className="p-2 bg-red-600 text-white rounded-full hover:bg-red-700"
+              >
+                Leave
+              </button>
+            </div>
 
-      <div style={{ display: "flex", gap: "10px", marginTop: "30px" }}>
-        <button
-          onClick={joinPodcast}
-          style={{
-            padding: "15px",
-            fontSize: "16px",
-            color: "white",
-            backgroundColor: "#2196F3",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-            width: "48%",
-          }}
-        >
-          🎧 Join Podcast
-        </button>
-        <button
-          onClick={leavePodcast}
-          disabled={!socket}
-          style={{
-            padding: "15px",
-            fontSize: "16px",
-            color: "white",
-            backgroundColor: "#9E9E9E",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-            width: "48%",
-            opacity: !socket ? 0.5 : 1,
-          }}
-        >
-          👋 Leave Podcast
-        </button>
-      </div>
-
-      {/* Display Statuses */}
-      <div style={{ marginTop: "20px" }}>
-        <div
-          style={{
-            backgroundColor: "#f3f4f6",
-            padding: "20px",
-            marginTop: "20px",
-            borderLeft: "4px solid #2196F3",
-            borderRadius: "8px",
-          }}
-        >
-          <div style={{ fontWeight: "bold", color: "#444" }}>
-            Connection Status
+            <div className="stats mt-4 text-sm text-gray-700">
+              <span>Listeners: {listenerCount}</span>
+              <span>Status: {connectionStatus}</span>
+            </div>
           </div>
-          <div style={{ color: "#888" }}>{status}</div>
-        </div>
 
-        <div
-          style={{
-            backgroundColor: "#fff3cd",
-            padding: "20px",
-            borderLeft: "4px solid #ffc107",
-            borderRadius: "8px",
-            marginTop: "20px",
-          }}
-        >
-          <div style={{ fontWeight: "bold", color: "#444" }}>Audio Status</div>
-          <div style={{ color: "#888" }}>{audioStatus}</div>
-        </div>
-
-        <div style={{ marginTop: "20px" }}>
-          <label htmlFor="volumeSlider" style={{ fontWeight: "bold", color: "#444" }}>
-            Volume:
-          </label>
-          <input
-            type="range"
-            id="volumeSlider"
-            min="0"
-            max="100"
-            value={currentVolume * 100}
-            onChange={handleVolumeChange}
-            style={{ width: "100%", marginTop: "5px" }}
-          />
-          <span>{Math.round(currentVolume * 100)}%</span>
+          <div className="w-[90%] sm:w-[500px] md:w-[650px] lg:w-[800px] text-gray-700">
+            <h3 className="text-base sm:text-lg md:text-xl font-bold mb-1">
+              Description
+            </h3>
+            <p className="m-0 text-sm sm:text-base md:text-lg">{description}</p>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default SpecificLive;
+export default SpecificPodcast;
