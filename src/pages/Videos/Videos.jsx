@@ -27,6 +27,7 @@ function Videos() {
       const items =
         data?.data.slice(startIndex, startIndex + ITEMS_PER_PAGE) || [];
       setCurrentItems(items);
+      console.log(items[5])
     }
   }, [data, currentPage]);
 

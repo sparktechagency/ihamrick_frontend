@@ -24,8 +24,10 @@ function Podcasts() {
       setTotalPages(Math.ceil(total / ITEMS_PER_PAGE));
       const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
       const items =
-        data?.data?.podcasts.slice(startIndex, startIndex + ITEMS_PER_PAGE) || [];
+        data?.data?.podcasts.slice(startIndex, startIndex + ITEMS_PER_PAGE) ||
+        [];
       setCurrentItems(items);
+      console.log(items[5]);
     }
   }, [data, currentPage]);
   const handlePageChange = (page) => {
@@ -65,20 +67,33 @@ function Podcasts() {
 
       {/* Podcast Cards */}
       <div className="grid gap-8 sm:gap-10 md:gap-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 px-4 sm:px-6 md:px-10 w-full max-w-7xl">
-        {currentItems.map((item) => (
-          <CardComponent
-            key={item._id}
-            id={item._id}
-            imageUrl={item.coverImage}
-            title={item.title}
-            description={item.description}
-            podcastUrl={item.recordedSignedUrl}
-            from="podcasts"
-          />
-        ))}
-      </div>
+        {currentItems.map((item) => {
+          const start = item.actualStart ? new Date(item.actualStart) : null;
+          const end = item.actualEnd ? new Date(item.actualEnd) : null;
 
-      {/* Pagination */}
+          const startTime = start ? start.toISOString() : null;
+          const endTime = end ? end.toISOString() : null;
+
+          const computedDuration =
+            start && end ? (end.getTime() - start.getTime()) / 1000 : null;
+          console.log(computedDuration);
+          return (
+            <CardComponent
+              key={item._id}
+              id={item._id}
+              imageUrl={item.coverImage}
+              title={item.title}
+              description={item.description}
+              podcastUrl={item.recordedSignedUrl}
+              startTime={startTime}
+              endTime={endTime}
+              computedDuration={computedDuration}
+              totalListeners={item.totalListeners}
+              activeListeners={item.activeListeners}
+            />
+          );
+        })}
+      </div>
       {totalPages > 1 && isRootPodcastRoute && (
         <Pagination
           currentPage={currentPage}
