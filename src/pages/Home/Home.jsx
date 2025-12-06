@@ -122,7 +122,6 @@ function Home() {
         setMessage("Thank you for subscribing!");
         setIsSubscribed(true);
         setShowRssModal(false);
-        navigate("/some-other-page"); // Navigate after successful subscription
       }
     } catch (err) {
       // Handle the error if the user is already subscribed
@@ -133,7 +132,6 @@ function Home() {
         setMessage("Thank you! You are already subscribed.");
         setIsSubscribed(true);
         setShowRssModal(false);
-        navigate("/some-other-page"); // Redirect after showing the message
       } else {
         setError("Failed to submit data. Please try again later.");
       }
