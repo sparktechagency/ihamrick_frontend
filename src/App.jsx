@@ -15,6 +15,7 @@ import SpecificPublication from "./pages/Publications/components/SepcificPublica
 import AllLives from "./pages/Live/AllLives";
 import SepcificLive from "./pages/Live/SepcificLive";
 import SpecificVideo from "./pages/Videos/components/SepcificVideo";
+import Disclaimer from "./pages/Disclaimer";
 function App() {
   return (
     <Router>
@@ -38,6 +39,7 @@ function App() {
         <Route path="/videos/:videoId" element={<SpecificVideo />} />
         <Route path="/live" element={<AllLives />} />
         <Route path="/live/:liveId" element={<SepcificLive />} />
+        <Route path="/disclaimer" element={<Disclaimer />} />
       </Routes>
 
       <Footer />

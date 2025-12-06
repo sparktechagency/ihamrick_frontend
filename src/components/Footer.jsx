@@ -6,17 +6,36 @@ import {
   Facebook,
   Twitter,
   Instagram,
+  Youtube,
 } from "lucide-react";
+import { FaLinkedin, FaWhatsapp, FaTiktok } from "react-icons/fa";
+import { BsSubstack } from "react-icons/bs";
 import LogoIcon from "../assets/Footer/logo.svg";
 import { Link } from "react-router-dom";
-
+import { useGetAllSocialMediaLinksQuery } from "../services/allApi";
 function Footer() {
+  const { data: socialLinks, error } = useGetAllSocialMediaLinksQuery();
   const quickLinks = [
     { name: "Blog", path: "/blog" },
     { name: "Videos", path: "/videos" },
     { name: "Podcasts", path: "/podcasts" },
     { name: "Publications", path: "/publications" },
   ];
+
+  const socialMediaIcons = {
+    Facebook: <Facebook className="w-5 h-5" fill="white" />,
+    X: <Twitter className="w-5 h-5" fill="white" />,
+    Instagram: <Instagram className="w-5 h-5" />,
+    Youtube: <Youtube className="w-5 h-5" />,
+    WhatsApp: <FaWhatsapp className="w-5 h-5 text-white" />,
+    TikTok: <FaTiktok className="w-5 h-5 text-white" />,
+    LinkedIn: <FaLinkedin className="w-5 h-5 text-white" />,
+    Substack: <BsSubstack className="w-5 h-5 text-white"></BsSubstack>,
+  };
+
+  if (error) {
+    return <div>Error loading social media links</div>;
+  }
   return (
     <footer className="relative">
       {/* Wavy gradient background */}
@@ -100,27 +119,16 @@ function Footer() {
               Social Media
             </h3>
             <div className="flex gap-4">
-              <a
-                href="#"
-                className="w-10 h-10 bg-black rounded-lg flex items-center justify-center hover:bg-black/80 transition-colors"
-                aria-label="Facebook"
-              >
-                <Facebook className="w-5 h-5" fill="white" />
-              </a>
-              <a
-                href="#"
-                className="w-10 h-10 bg-black rounded-lg flex items-center justify-center hover:bg-black/80 transition-colors"
-                aria-label="Twitter"
-              >
-                <Twitter className="w-5 h-5" fill="white" />
-              </a>
-              <a
-                href="#"
-                className="w-10 h-10 bg-black rounded-lg flex items-center justify-center hover:bg-black/80 transition-colors"
-                aria-label="Instagram"
-              >
-                <Instagram className="w-5 h-5" />
-              </a>
+              {socialLinks?.data.map((socialLink) => (
+                <a
+                  key={socialLink._id}
+                  href={socialLink.url}
+                  className="w-10 h-10 bg-black rounded-lg flex items-center justify-center hover:bg-black/80 transition-colors"
+                  aria-label={socialLink.name}
+                >
+                  {socialMediaIcons[socialLink.name]}
+                </a>
+              ))}
             </div>
           </div>
         </div>
@@ -129,9 +137,12 @@ function Footer() {
           &copy; {new Date().getFullYear()} DrHamrickMd, a product of HMD
           Productions, LLC. All rights reserved. DrHamrickMD does not provide
           medical advice, diagnosis, or treatment. See{" "}
-          <a href="/disclaimer" className="underline">
+          <Link
+            to="/disclaimer"
+            className="underline text-white hover:text-blue-700 transition-colors"
+          >
             additional information
-          </a>
+          </Link>
         </p>
       </div>
     </footer>

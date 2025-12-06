@@ -61,6 +61,16 @@ const allApi = createApi({
     getLifeSuggestions: builder.query({
       query: () => "life-suggestions/",
     }),
+    getAllSocialMediaLinks: builder.query({
+      query: () => "/social-links",
+    }),
+    addRssUser: builder.mutation({
+      query: (data) => ({
+        url: "/rss-feed/add-data",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -78,6 +88,8 @@ export const {
   useContactUsMutation,
   useGetSearchResultsQuery,
   useGetLifeSuggestionsQuery, // Exported hook for the new API
+  useGetAllSocialMediaLinksQuery,
+  useAddRssUserMutation
 } = allApi;
 
 export default allApi;
