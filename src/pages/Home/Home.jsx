@@ -7,7 +7,14 @@ import Podcasts from "../Podcasts/Podcasts";
 import Publications from "../Publications/Publications";
 import Contact from "../Contact/Contact";
 import Motivation from "../../components/Motivation";
-import { useGetLifeSuggestionsQuery, useGetAllVideosQuery, useGetAllBlogsQuery, useGetAllPublicationsQuery, useGetRecordedPodcastsQuery, useAddRssUserMutation } from "../../services/allApi";
+import {
+  useGetLifeSuggestionsQuery,
+  useGetAllVideosQuery,
+  useGetAllBlogsQuery,
+  useGetAllPublicationsQuery,
+  useGetRecordedPodcastsQuery,
+  useAddRssUserMutation,
+} from "../../services/allApi";
 import { Link } from "react-router-dom";
 import { setCookie, getCookie } from "../../services/cookies";
 import { useNavigate } from "react-router-dom";
@@ -26,14 +33,19 @@ function Home() {
   const navigate = useNavigate();
 
   // API Calls
-  const { data: lifeData, isLoading, error: lifeError } = useGetLifeSuggestionsQuery();
+  const {
+    data: lifeData,
+    isLoading,
+    error: lifeError,
+  } = useGetLifeSuggestionsQuery();
   const { data: videosData } = useGetAllVideosQuery();
   const { data: blogsData } = useGetAllBlogsQuery();
   const { data: publicationsData } = useGetAllPublicationsQuery();
   const { data: podcastData } = useGetRecordedPodcastsQuery();
 
   // RSS Mutation Hook for Subscription
-  const [addRssUser, { isLoading: isSubmitting, isError, isSuccess }] = useAddRssUserMutation();
+  const [addRssUser, { isLoading: isSubmitting, isError, isSuccess }] =
+    useAddRssUserMutation();
 
   // Latest Content
   const latestContent = {
@@ -46,9 +58,15 @@ function Home() {
   // Prepare Life Suggestions
   const tableData = [];
   if (lifeData?.data) {
-    const maxLength = Math.max(lifeData.data.decrease.length, lifeData.data.increase.length);
+    const maxLength = Math.max(
+      lifeData.data.decrease.length,
+      lifeData.data.increase.length
+    );
     for (let i = 0; i < maxLength; i++) {
-      tableData.push([lifeData.data.decrease[i]?.content || "", lifeData.data.increase[i]?.content || ""]);
+      tableData.push([
+        lifeData.data.decrease[i]?.content || "",
+        lifeData.data.increase[i]?.content || "",
+      ]);
     }
   }
 
@@ -97,7 +115,10 @@ function Home() {
 
       if (result.success) {
         const token = btoa(JSON.stringify({ name, email, phone }));
-        setCookie("rssUserToken", token, { path: "/", maxAge: 60 * 60 * 24 * 30 }); // 30 days
+        setCookie("rssUserToken", token, {
+          path: "/",
+          maxAge: 60 * 60 * 24 * 30,
+        }); // 30 days
         setMessage("Thank you for subscribing!");
         setIsSubscribed(true);
         setShowRssModal(false);
@@ -105,7 +126,10 @@ function Home() {
       }
     } catch (err) {
       // Handle the error if the user is already subscribed
-      if (err?.statusCode === 409 && err?.message === "Your Data is Already Stored") {
+      if (
+        err?.statusCode === 409 &&
+        err?.message === "Your Data is Already Stored"
+      ) {
         setMessage("Thank you! You are already subscribed.");
         setIsSubscribed(true);
         setShowRssModal(false);
@@ -118,7 +142,10 @@ function Home() {
 
   const handleCancelSubscription = () => {
     // Set cookie even if user cancels, but do not call API
-    setCookie("rssUserToken", "cancelled", { path: "/", maxAge: 60 * 60 * 24 * 30 }); // 30 days
+    setCookie("rssUserToken", "cancelled", {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+    }); // 30 days
     setShowRssModal(false); // Close the modal if user cancels
   };
 
@@ -127,12 +154,16 @@ function Home() {
       {/* Apply global blur and pointer events disable when RSS Modal is open */}
       <div className={showRssModal ? "blur-sm pointer-events-none" : ""}>
         {/* Sticky Header */}
-        <header className={`fixed top-0 left-0 w-full z-50 h-16 sm:h-20 lg:h-20 transition-colors duration-300 ${headerBg}`} />
+        <header
+          className={`fixed top-0 left-0 w-full z-50 h-16 sm:h-20 lg:h-20 transition-colors duration-300 ${headerBg}`}
+        />
 
         {/* HERO SECTION */}
         <div
           ref={heroRef}
-          className={`w-full min-h-screen flex flex-col items-start justify-center px-4 sm:px-10 lg:px-20 pt-24 md:pt-8 lg:pt-0 ${showRssModal ? 'blur-sm pointer-events-none' : ''}`} // Add blur and disable interaction
+          className={`w-full min-h-screen flex flex-col items-start justify-center px-4 sm:px-10 lg:px-20 pt-24 md:pt-8 lg:pt-0 ${
+            showRssModal ? "blur-sm pointer-events-none" : ""
+          }`} // Add blur and disable interaction
           style={{
             backgroundImage: `url(${bgImage})`,
             backgroundSize: "cover",
@@ -142,7 +173,11 @@ function Home() {
         >
           <div className="w-full flex flex-col lg:flex-row items-start lg:items-center justify-center">
             <div className="w-full lg:w-2/3 flex justify-center items-start mb-6 lg:mb-0 lg:mr-6 pt-6 lg:pt-0">
-              <img src={LifeCycleImage} alt="Life Cycle" className="w-full h-auto" />
+              <img
+                src={LifeCycleImage}
+                alt="Life Cycle"
+                className="w-full h-auto"
+              />
             </div>
 
             <div className="w-full lg:w-1/3 flex justify-center px-2 sm:px-6 lg:px-10 py-2">
@@ -151,18 +186,27 @@ function Home() {
                   <table className="w-full min-w-[250px] text-center border border-white border-opacity-30 backdrop-blur-md bg-transparent">
                     <tbody>
                       <tr>
-                        <td colSpan={2} className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold py-3 sm:py-4 text-black">
+                        <td
+                          colSpan={2}
+                          className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold py-3 sm:py-4 text-black"
+                        >
                           To Increase Quality of Life
                         </td>
                       </tr>
                       <tr className="h-10 sm:h-12 font-bold text-black">
-                        <td className="border-b border-white border-opacity-30 px-4">Decrease</td>
-                        <td className="border-b border-white border-opacity-30 px-4">Increase</td>
+                        <td className="border-b border-white border-opacity-30 px-4">
+                          Decrease
+                        </td>
+                        <td className="border-b border-white border-opacity-30 px-4">
+                          Increase
+                        </td>
                       </tr>
 
                       {isLoading && (
                         <tr>
-                          <td colSpan="2" className="py-4">Loading...</td>
+                          <td colSpan="2" className="py-4">
+                            Loading...
+                          </td>
                         </tr>
                       )}
 
@@ -174,15 +218,20 @@ function Home() {
                         </tr>
                       )}
 
-                      {!isLoading && !lifeError && tableData.map((row, i) => (
-                        <tr key={i} className="hover:bg-white/20 transition">
-                          {row.map((cell, ci) => (
-                            <td key={ci} className="border border-white border-opacity-30 px-4 py-2 text-sm">
-                              {cell || "--"}
-                            </td>
-                          ))}
-                        </tr>
-                      ))}
+                      {!isLoading &&
+                        !lifeError &&
+                        tableData.map((row, i) => (
+                          <tr key={i} className="hover:bg-white/20 transition">
+                            {row.map((cell, ci) => (
+                              <td
+                                key={ci}
+                                className="border border-white border-opacity-30 px-4 py-2 text-sm"
+                              >
+                                {cell || "--"}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
                     </tbody>
                   </table>
                 </div>
@@ -197,8 +246,11 @@ function Home() {
                 {latestContent.video && (
                   <tr className="hover:bg-white/10 cursor-pointer">
                     <td className="border-b border-white border-opacity-20 py-3 font-semibold">
-                      Videos
+                      <Link to={`/videos/${latestContent.video._id}`}>
+                        Videos
+                      </Link>
                     </td>
+
                     <td className="border-b border-white border-opacity-20 py-3 text-left">
                       <Link to={`/videos/${latestContent.video._id}`}>
                         {latestContent.video?.title}
@@ -209,7 +261,9 @@ function Home() {
                 {latestContent.podcast && (
                   <tr className="hover:bg-white/10 cursor-pointer">
                     <td className="border-b border-white border-opacity-20 py-3 font-semibold">
-                      Podcasts
+                      <Link to={`/podcasts/${latestContent.podcast._id}`}>
+                        Podcasts
+                      </Link>
                     </td>
                     <td className="border-b border-white border-opacity-20 py-3 text-left">
                       <Link to={`/podcasts/${latestContent.podcast._id}`}>
@@ -221,7 +275,7 @@ function Home() {
                 {latestContent.blog && (
                   <tr className="hover:bg-white/10 cursor-pointer">
                     <td className="border-b border-white border-opacity-20 py-3 font-semibold">
-                      Blog
+                      <Link to={`/blog/${latestContent.blog._id}`}>Blog</Link>
                     </td>
                     <td className="border-b border-white border-opacity-20 py-3 text-left">
                       <Link to={`/blog/${latestContent.blog._id}`}>
@@ -233,10 +287,16 @@ function Home() {
                 {latestContent.publication && (
                   <tr className="hover:bg-white/10 cursor-pointer">
                     <td className="border-b border-white border-opacity-20 py-3 font-semibold">
-                      Publications
+                      <Link
+                        to={`/publications/${latestContent.publication._id}`}
+                      >
+                        Publications
+                      </Link>
                     </td>
                     <td className="border-b border-white border-opacity-20 py-3 text-left">
-                      <Link to={`/publications/${latestContent.publication._id}`}>
+                      <Link
+                        to={`/publications/${latestContent.publication._id}`}
+                      >
                         {latestContent.publication?.title}
                       </Link>
                     </td>
@@ -252,16 +312,21 @@ function Home() {
       {showRssModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-gradient-to-r from-red-500 via-white-400 to-black-900 p-8 rounded-lg w-11/12 sm:w-96 shadow-lg max-w-lg transition-all duration-300 ease-in-out transform scale-100 hover:scale-105">
-            <h2 className="text-3xl font-extrabold text-white mb-6 text-center">Subscribe to Our RSS Feed</h2>
+            <h2 className="text-3xl font-extrabold text-white mb-6 text-center">
+              Subscribe to Our RSS Feed
+            </h2>
             <p className="text-lg text-white mb-6 text-center">
-              Subscribe to stay updated with our latest content. Receive regular notifications on new updates directly in your feed.
+              Subscribe to stay updated with our latest content. Receive regular
+              notifications on new updates directly in your feed.
             </p>
             {message && <p className="text-green-600 text-center">{message}</p>}
             {error && <p className="text-red-600 text-center">{error}</p>}
 
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label className="block text-lg font-semibold text-white mb-2">Name</label>
+                <label className="block text-lg font-semibold text-white mb-2">
+                  Name
+                </label>
                 <input
                   type="text"
                   value={name}
@@ -272,7 +337,9 @@ function Home() {
               </div>
 
               <div className="mb-4">
-                <label className="block text-lg font-semibold text-white mb-2">Email</label>
+                <label className="block text-lg font-semibold text-white mb-2">
+                  Email
+                </label>
                 <input
                   type="email"
                   value={email}
@@ -283,7 +350,9 @@ function Home() {
               </div>
 
               <div className="mb-4">
-                <label className="block text-lg font-semibold text-white mb-2">Phone</label>
+                <label className="block text-lg font-semibold text-white mb-2">
+                  Phone
+                </label>
                 <input
                   type="tel"
                   value={phone}
@@ -294,7 +363,9 @@ function Home() {
               </div>
 
               <div className="mb-6">
-                <label className="block text-lg font-semibold text-white mb-2">Other Details (Optional)</label>
+                <label className="block text-lg font-semibold text-white mb-2">
+                  Other Details (Optional)
+                </label>
                 <textarea
                   value={others}
                   onChange={(e) => setOthers(e.target.value)}
