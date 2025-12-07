@@ -8,6 +8,7 @@ import {
   useGetAboutUsQuery,
   useGetPrivacyPolicyQuery,
 } from "../../services/allApi";
+import DOMPurify from "dompurify"; // Import DOMPurify for sanitization
 
 const InputField = ({
   placeholder,
@@ -86,6 +87,11 @@ function Contact() {
       setShowModal(false);
       setModalLeaving(false);
     }, 500);
+  };
+
+  // Sanitize HTML content to avoid XSS
+  const sanitizeContent = (htmlContent) => {
+    return DOMPurify.sanitize(htmlContent); // Sanitize the HTML before rendering
   };
 
   return (
@@ -172,14 +178,26 @@ function Contact() {
       {isRootContactRoute && !isAboutUsLoading && aboutUsData && (
         <div className="mt-10 w-full max-w-6xl px-4 sm:px-8 md:px-12 lg:px-20">
           <h3 className="text-xl font-bold text-gray-900 mb-4">About Us</h3>
-          <p className="text-gray-700">{aboutUsData.data.content}</p>
+          {/* Render the sanitized HTML content */}
+          <div
+            className="text-gray-700"
+            dangerouslySetInnerHTML={{
+              __html: sanitizeContent(aboutUsData.data.content),
+            }}
+          />
         </div>
       )}
 
       {isRootContactRoute && !isPrivacyPolicyLoading && privacyPolicyData && (
         <div className="mt-10 w-full max-w-6xl px-4 sm:px-8 md:px-12 lg:px-20">
           <h3 className="text-xl font-bold text-gray-900 mb-4">Privacy Policy</h3>
-          <p className="text-gray-700">{privacyPolicyData.data.content}</p>
+          {/* Render the sanitized HTML content */}
+          <div
+            className="text-gray-700"
+            dangerouslySetInnerHTML={{
+              __html: sanitizeContent(privacyPolicyData.data.content),
+            }}
+          />
         </div>
       )}
 
