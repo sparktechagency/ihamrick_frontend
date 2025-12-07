@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 const allApi = createApi({
   reducerPath: "allApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://ihamrick.onrender.com/api/",
+    baseUrl: "https://ihamrick.onrender.com/api/" || "http://10.10.20.73:5005/api/",
   }),
   endpoints: (builder) => ({
     getAllVideos: builder.query({
@@ -71,6 +71,12 @@ const allApi = createApi({
         body: data,
       }),
     }),
+    getAboutUs: builder.query({
+      query: () => "website-content/about-us",
+    }),
+    getPrivacyPolicy: builder.query({
+      query: () => "website-content/privacy-policy",
+    }),
   }),
 });
 
@@ -89,7 +95,9 @@ export const {
   useGetSearchResultsQuery,
   useGetLifeSuggestionsQuery, // Exported hook for the new API
   useGetAllSocialMediaLinksQuery,
-  useAddRssUserMutation
+  useAddRssUserMutation,
+  useGetAboutUsQuery,
+  useGetPrivacyPolicyQuery
 } = allApi;
 
 export default allApi;

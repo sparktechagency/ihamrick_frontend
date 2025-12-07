@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Motivation from "../../components/Motivation";
 import contact from "./assets/contact.svg";
 import successImg from "./assets/success.svg"; // ✅ full image modal background
-import { useContactUsMutation } from "../../services/allApi";
+import {
+  useContactUsMutation,
+  useGetAboutUsQuery,
+  useGetPrivacyPolicyQuery,
+} from "../../services/allApi";
 
 const InputField = ({
   placeholder,
@@ -47,11 +51,14 @@ function Contact() {
   const [isSending, setIsSending] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalLeaving, setModalLeaving] = useState(false);
-  const [successMessage, setSuccessMessage] = useState(""); // State for dynamic success message
-
-  // Use the RTK Query mutation hook
+  const [successMessage, setSuccessMessage] = useState("");
   const [contactUs, { isLoading, isSuccess, isError, error }] =
     useContactUsMutation();
+
+  // Fetch About Us and Privacy Policy
+  const { data: aboutUsData, isLoading: isAboutUsLoading } = useGetAboutUsQuery();
+  const { data: privacyPolicyData, isLoading: isPrivacyPolicyLoading } =
+    useGetPrivacyPolicyQuery();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,10 +67,8 @@ function Contact() {
     try {
       const response = await contactUs(formData).unwrap();
       setIsSending(false);
-      setSuccessMessage(response.message); // Set success message from API response
+      setSuccessMessage(response.message);
       setShowModal(true);
-
-      // Clear input fields after form submission
       setFirstName("");
       setLastName("");
       setEmail("");
@@ -162,6 +167,21 @@ function Contact() {
           </form>
         </div>
       </div>
+
+      {/* === Conditional Rendering of About Us and Privacy Policy === */}
+      {isRootContactRoute && !isAboutUsLoading && aboutUsData && (
+        <div className="mt-10 w-full max-w-6xl px-4 sm:px-8 md:px-12 lg:px-20">
+          <h3 className="text-xl font-bold text-gray-900 mb-4">About Us</h3>
+          <p className="text-gray-700">{aboutUsData.data.content}</p>
+        </div>
+      )}
+
+      {isRootContactRoute && !isPrivacyPolicyLoading && privacyPolicyData && (
+        <div className="mt-10 w-full max-w-6xl px-4 sm:px-8 md:px-12 lg:px-20">
+          <h3 className="text-xl font-bold text-gray-900 mb-4">Privacy Policy</h3>
+          <p className="text-gray-700">{privacyPolicyData.data.content}</p>
+        </div>
+      )}
 
       {/* ✅ Full-Image Modal */}
       {showModal && (
