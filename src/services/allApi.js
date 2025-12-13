@@ -3,14 +3,14 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 const allApi = createApi({
   reducerPath: "allApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://ihamrick.onrender.com/api/" || "http://10.10.20.73:5005/api/",
+    baseUrl: "http://34.29.87.142:5005/api/" || "http://34.29.87.142:5005/api/",
   }),
   endpoints: (builder) => ({
     getAllVideos: builder.query({
       query: () => "videos/",
     }),
     getAllBlogs: builder.query({
-      query: () => "blog/website-blogs",
+      query: () => "blog/",
     }),
     getVideoById: builder.query({
       query: (videoId) => `videos/${videoId}`,
@@ -19,7 +19,7 @@ const allApi = createApi({
       query: (blogId) => `blog/${blogId}`,
     }),
     getAllPublications: builder.query({
-      query: () => "publications/website-publications",
+      query: () => "publications/",
     }),
     getPublicationById: builder.query({
       query: (publicationId) => `publications/${publicationId}`,

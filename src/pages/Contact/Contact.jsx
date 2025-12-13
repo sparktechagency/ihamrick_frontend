@@ -67,6 +67,7 @@ function Contact() {
     const formData = { firstName, lastName, email, phone, message };
     try {
       const response = await contactUs(formData).unwrap();
+      console.log(response)
       setIsSending(false);
       setSuccessMessage(response.message);
       setShowModal(true);

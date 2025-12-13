@@ -22,12 +22,12 @@ function Videos() {
     if (data) {
       const total = data?.meta?.total || 0;
       setTotalPages(Math.ceil(total / ITEMS_PER_PAGE));
-
+      console.log(JSON.stringify(data));
       const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
       const items =
         data?.data.slice(startIndex, startIndex + ITEMS_PER_PAGE) || [];
       setCurrentItems(items);
-      console.log(items[5])
+      console.log(items[5]);
     }
   }, [data, currentPage]);
 
