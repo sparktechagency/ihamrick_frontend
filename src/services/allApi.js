@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 const allApi = createApi({
   reducerPath: "allApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://34.29.87.142:5005/api/" || "http://34.29.87.142:5005/api/",
+    baseUrl: "http://backend.pg-65.com/api/" || "http://backend.pg-65.com/api/",
   }),
   endpoints: (builder) => ({
     getAllVideos: builder.query({

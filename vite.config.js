@@ -1,16 +1,26 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
-
-// https://vite.dev/config/
+ 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+ 
+  // Dev server (npm run dev)
   server: {
-    host: true, // exposes to network (0.0.0.0)
+    host: true, // 0.0.0.0
+    port: 5173,
     allowedHosts: [
-      ".ngrok-free.app", // ✅ allow any ngrok subdomain
+      ".ngrok-free.app",
       "localhost",
     ],
-    port: 5173, // optional, same port as your app
+  }, 
+  preview: {
+    host: true, 
+    port: 4173,  
+    allowedHosts: [
+      "*",
+      "https://pg-65.com",
+      "https://www.pg-65.com",
+    ],
   },
 });
