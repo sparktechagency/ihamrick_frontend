@@ -1,13 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Basic -->
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ihamrick</title>
+
+    <!-- Title -->
+    <title>PG-65 • Smart Living</title>
+
+    <!-- SEO -->
+    <meta name="description" content="PG-65 – Smart, modern hostel living experience" />
+    <meta name="theme-color" content="#4f46e5" />
+
+    <!-- Favicon (Animated SVG) -->
+    <link rel="icon" type="image/svg+xml" href="/demo.svg" />
+
+    <!-- Animated Title Script -->
+    <script>
+      const titles = [
+        "PG-65 • Smart Living",
+        "PG-65 • Comfort Redefined"
+      ];
+
+      let titleIndex = 0;
+      setInterval(() => {
+        document.title = titles[titleIndex];
+        titleIndex = (titleIndex + 1) % titles.length;
+      }, 2000);
+    </script>
   </head>
+
   <body>
-    <div id="root" className="scrollbar-hide overflow-auto"></div>
+    <!-- React Root (FIXED: class instead of className) -->
+    <div id="root" class="overflow-auto"></div>
+
+    <!-- Vite Entry -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
