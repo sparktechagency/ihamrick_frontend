@@ -141,7 +141,7 @@ const PodcastCard = ({
           className="w-full h-[150px] object-cover rounded-md"
         />
 
-        <h2 className="text-black font-semibold text-sm mt-2">“{title}”</h2>
+        <h2 className="text-black font-semibold text-sm mt-2">{title}</h2>
       </Link>
 
       {/* Audio */}
