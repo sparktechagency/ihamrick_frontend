@@ -31,7 +31,13 @@ const LiveCard = ({
         {liveStatus}
       </div>
       <Link
-        to={`/live/${liveId}?imageUrl=${encodeURIComponent(imageUrl)}&title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}&liveStreamUrl=${encodeURIComponent(liveStreamUrl)}&liveStatus=${encodeURIComponent(liveStatus)}`}
+        to={`/live/${liveId}?imageUrl=${encodeURIComponent(
+          imageUrl
+        )}&title=${encodeURIComponent(title)}&description=${encodeURIComponent(
+          description
+        )}&liveStreamUrl=${encodeURIComponent(
+          liveStreamUrl
+        )}&liveStatus=${encodeURIComponent(liveStatus)}`}
         className="w-full text-center"
       >
         <img
@@ -40,7 +46,10 @@ const LiveCard = ({
           className="w-full h-[200px] object-cover rounded-lg shadow-md"
         />
         <h2 className="text-xl font-semibold text-gray-900 mt-4">{title}</h2>
-        <p className="text-gray-600 mt-2 text-sm">{description}</p>
+        <div
+          className="m-0 text-sm sm:text-base md:text-lg custom-html-content"
+          dangerouslySetInnerHTML={{ __html: description }}
+        />
       </Link>
       <audio ref={audioRef} src={liveStreamUrl} />
       <div className="flex items-center justify-center gap-4 mt-4 text-gray-900">

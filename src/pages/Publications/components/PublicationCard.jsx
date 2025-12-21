@@ -54,7 +54,7 @@ const PublicationCard = ({
                        truncate overflow-hidden "
             title={headline}
           >
-            {`"${headline}"`}
+            {headline}
           </p>
 
           <div className="text-[#A8A6AC]">{publishedDate}</div>

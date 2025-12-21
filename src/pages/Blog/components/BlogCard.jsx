@@ -2,7 +2,6 @@ import React from "react";
 
 import { Link } from "react-router-dom";
 
-
 const BlogCard = ({ id, imageUrl, headline, linkText, blogContent }) => {
   const RightArrowIcon = () => (
     <svg
@@ -49,7 +48,7 @@ const BlogCard = ({ id, imageUrl, headline, linkText, blogContent }) => {
                      truncate overflow-hidden text-ellipsis"
           title={headline} // shows full headline on hover
         >
-          {`"${headline}"`}
+          {headline}
         </p>
 
         <div className="flex justify-center">

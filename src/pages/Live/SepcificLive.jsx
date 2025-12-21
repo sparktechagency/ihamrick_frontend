@@ -10,10 +10,17 @@ const SpecificPodcast = () => {
 
   // Parse query parameters or use fallback values
   const queryParams = new URLSearchParams(search);
-  const imageUrl = queryParams.get("imageUrl") || state?.imageUrl || "https://via.placeholder.com/150";
+  const imageUrl =
+    queryParams.get("imageUrl") ||
+    state?.imageUrl ||
+    "https://via.placeholder.com/150";
   const title = queryParams.get("title") || state?.title || "Untitled Podcast";
-  const description = queryParams.get("description") || state?.description || "No description available";
-  const podcastUrl = queryParams.get("liveStreamUrl") || state?.liveStreamUrl || "#";
+  const description =
+    queryParams.get("description") ||
+    state?.description ||
+    "No description available";
+  const podcastUrl =
+    queryParams.get("liveStreamUrl") || state?.liveStreamUrl || "#";
 
   // Audio and WebSocket-related state and references
   const audioRef = useRef(null);
@@ -30,7 +37,7 @@ const SpecificPodcast = () => {
 
   // Join the podcast on component mount (when liveId is available)
   useEffect(() => {
-    if (liveId) joinPodcast();  // If liveId is available, join the podcast
+    if (liveId) joinPodcast(); // If liveId is available, join the podcast
   }, [liveId]);
 
   // Handles connecting to the podcast
@@ -93,7 +100,8 @@ const SpecificPodcast = () => {
 
   // Initializes the SourceBuffer for the MediaSource
   const initSourceBuffer = (mimeType) => {
-    if (sourceBuffer.current || mediaSource.current.readyState !== "open") return;
+    if (sourceBuffer.current || mediaSource.current.readyState !== "open")
+      return;
 
     if (MediaSource.isTypeSupported(mimeType)) {
       try {
@@ -129,7 +137,10 @@ const SpecificPodcast = () => {
         sourceBuffer.current.appendBuffer(chunk);
         isBufferUpdating.current = true;
       } catch (e) {
-        setConnectionStatus("Stream error: MediaSource closed. Please rejoin.", "error");
+        setConnectionStatus(
+          "Stream error: MediaSource closed. Please rejoin.",
+          "error"
+        );
       }
     }
   };
@@ -195,7 +206,7 @@ const SpecificPodcast = () => {
               alt={title}
               className="w-full h-[260px] object-cover rounded-md"
             />
-            <h2 className="text-black font-semibold text-sm mt-2">“{title}”</h2>
+            <h2 className="text-black font-semibold text-sm mt-2">{title}</h2>
             <audio
               ref={audioRef}
               onTimeUpdate={handleTimeUpdate}
@@ -227,7 +238,10 @@ const SpecificPodcast = () => {
             <h3 className="text-base sm:text-lg md:text-xl font-bold mb-1">
               Description
             </h3>
-            <p className="m-0 text-sm sm:text-base md:text-lg">{description}</p>
+            <div
+              className="m-0 text-sm sm:text-base md:text-lg custom-html-content"
+              dangerouslySetInnerHTML={{ __html: description }}
+            />
           </div>
         </div>
       </div>

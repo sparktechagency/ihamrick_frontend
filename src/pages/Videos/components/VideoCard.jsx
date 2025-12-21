@@ -39,13 +39,17 @@ const VideoCard = ({ id, imageUrl, title, description, videoUrl }) => {
           </div>
 
           {/* Transparent Title Section */}
-  <div className="absolute bottom-0 left-0 w-full p-4 backdrop-blur-sm 
-                bg-gradient-to-t from-[#3D3D3D] to-black/30">
-  <p className="text-white text-lg md:text-xl font-semibold text-center truncate" title={title}>
-   {`"${title}"`}
-  </p>
-</div>
-
+          <div
+            className="absolute bottom-0 left-0 w-full p-4 backdrop-blur-sm 
+                bg-gradient-to-t from-[#3D3D3D] to-black/30"
+          >
+            <p
+              className="text-white text-lg md:text-xl font-semibold text-center truncate"
+              title={title}
+            >
+              {title}
+            </p>
+          </div>
         </Link>
       </div>
     </div>

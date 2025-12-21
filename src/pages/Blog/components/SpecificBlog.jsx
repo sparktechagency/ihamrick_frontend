@@ -82,7 +82,10 @@ const SpecificBlog = () => {
             <h3 className="text-base sm:text-lg md:text-xl font-bold mb-1">
               Description:
             </h3>
-            <p className="m-0 text-sm sm:text-base md:text-lg">{description}</p>
+            <div
+              className="m-0 text-sm sm:text-base md:text-lg custom-html-content"
+              dangerouslySetInnerHTML={{ __html: description }}
+            />
           </div>
         </div>
       </div>

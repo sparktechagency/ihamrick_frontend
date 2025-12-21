@@ -9,7 +9,8 @@ const SpecificPublication = () => {
     return <div>Loading...</div>;
   }
   const publication = data?.data || {};
-  const {title,author,publicationDate,description,coverImage,file}=publication
+  const { title, author, publicationDate, description, coverImage, file } =
+    publication;
 
   if (error) {
     return <div>Error loading blog</div>;
@@ -87,7 +88,10 @@ const SpecificPublication = () => {
           {description && (
             <div className="text-left mt-6">
               <h3 className="text-base font-bold mb-2">Description:</h3>
-              <p className="text-sm">{description}</p>
+              <div
+                className="m-0 text-sm sm:text-base md:text-lg custom-html-content"
+                dangerouslySetInnerHTML={{ __html: description }}
+              />
             </div>
           )}
 

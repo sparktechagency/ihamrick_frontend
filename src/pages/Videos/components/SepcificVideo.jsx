@@ -45,7 +45,15 @@ const SpecificVideo = () => {
 
   const { data } = useGetVideoByIdQuery(videoId);
   const vd = data?.data || {};
-  const { title, description, transcription, signedUrl, thumbnailUrl, uploadDate, views } = vd;
+  const {
+    title,
+    description,
+    transcription,
+    signedUrl,
+    thumbnailUrl,
+    uploadDate,
+    views,
+  } = vd;
 
   // ---------------------------
   // Video Ready
@@ -112,11 +120,9 @@ const SpecificVideo = () => {
   };
 
   useEffect(() => {
-    const handler = () =>
-      setIsFullScreen(!!document.fullscreenElement);
+    const handler = () => setIsFullScreen(!!document.fullscreenElement);
     document.addEventListener("fullscreenchange", handler);
-    return () =>
-      document.removeEventListener("fullscreenchange", handler);
+    return () => document.removeEventListener("fullscreenchange", handler);
   }, []);
 
   // ---------------------------
@@ -175,7 +181,6 @@ const SpecificVideo = () => {
   return (
     <div className="flex flex-col items-center pt-20 bg-white min-h-screen">
       <div className="max-w-[1200px] w-full px-6">
-
         {/* Header */}
         <header className="flex items-center justify-between py-6">
           <button
@@ -235,7 +240,9 @@ const SpecificVideo = () => {
               {/* Controls */}
               <div
                 className={`absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent
-                transition-opacity ${showControls ? "opacity-100" : "opacity-0"}`}
+                transition-opacity ${
+                  showControls ? "opacity-100" : "opacity-0"
+                }`}
               >
                 {/* Custom Progress Bar */}
                 <div
@@ -294,7 +301,9 @@ const SpecificVideo = () => {
                       onChange={changeVolume}
                     />
 
-                    <span>{formatTime(currentTime)} / {formatTime(duration)}</span>
+                    <span>
+                      {formatTime(currentTime)} / {formatTime(duration)}
+                    </span>
                   </div>
 
                   <div className="flex items-center gap-4">
@@ -334,17 +343,26 @@ const SpecificVideo = () => {
         {/* Details */}
         <h2 className="text-xl font-bold mt-8 mb-4">Video Details</h2>
 
-        <p><strong>Views:</strong> {views}</p>
-        <p><strong>Uploaded:</strong> {new Date(uploadDate).toLocaleDateString()}</p>
+        <p>
+          <strong>Views:</strong> {views}
+        </p>
+        <p>
+          <strong>Uploaded:</strong> {new Date(uploadDate).toLocaleDateString()}
+        </p>
 
-        <p className="mt-4">{description}</p>
+        {/* Description with HTML support */}
+        <div
+          className="mt-4 prose prose-sm max-w-none"
+          dangerouslySetInnerHTML={{ __html: description }}
+        />
 
         {transcription && (
           <div className="mt-6 bg-gray-100 p-4 rounded">
             <h3 className="font-semibold mb-2">Transcription</h3>
-            <pre className="whitespace-pre-wrap text-gray-700">
-              {transcription}
-            </pre>
+            <div
+              className="text-gray-700 prose prose-sm max-w-none"
+              dangerouslySetInnerHTML={{ __html: transcription }}
+            />
           </div>
         )}
       </div>
