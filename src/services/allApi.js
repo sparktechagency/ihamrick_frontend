@@ -10,16 +10,16 @@ const allApi = createApi({
       query: () => "videos/",
     }),
     getAllBlogs: builder.query({
-      query: () => "blog/",
+      query: () => "blog/website-blogs",
     }),
     getVideoById: builder.query({
-      query: (videoId) => `videos/${videoId}`,
+      query: (videoId) => `videos/watch/${videoId}`,
     }),
     getBlogById: builder.query({
-      query: (blogId) => `blog/${blogId}`,
+      query: (blogId) => `blog/website-blogs/${blogId}`,
     }),
     getAllPublications: builder.query({
-      query: () => "publications/",
+      query: () => "publications/website-publications",
     }),
     getPublicationById: builder.query({
       query: (publicationId) => `publications/${publicationId}`,
