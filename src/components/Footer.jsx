@@ -9,12 +9,25 @@ import {
   Youtube,
 } from "lucide-react";
 import { FaLinkedin, FaWhatsapp, FaTiktok } from "react-icons/fa";
+import {
+  useGetAdminInfoQuery,
+  useGetAllSocialMediaLinksQuery,
+} from "../services/allApi";
 import { BsSubstack } from "react-icons/bs";
 import LogoIcon from "../assets/Footer/logo.svg";
 import { Link } from "react-router-dom";
-import { useGetAllSocialMediaLinksQuery } from "../services/allApi";
+
 function Footer() {
-  const { data: socialLinks, error } = useGetAllSocialMediaLinksQuery();
+  // Fetching the social media links and admin information
+  const { data: socialLinks, error: socialError } =
+    useGetAllSocialMediaLinksQuery();
+  const { data: adminInfo, error: adminError } = useGetAdminInfoQuery();
+
+  // If there's an error in fetching social media or admin data
+  if (socialError || adminError) {
+    return <div>Error loading data</div>;
+  }
+
   const quickLinks = [
     { name: "Blog", path: "/blog" },
     { name: "Videos", path: "/videos" },
@@ -33,9 +46,6 @@ function Footer() {
     Substack: <BsSubstack className="w-5 h-5 text-white"></BsSubstack>,
   };
 
-  if (error) {
-    return <div>Error loading social media links</div>;
-  }
   return (
     <footer className="relative">
       {/* Wavy gradient background */}
@@ -96,19 +106,15 @@ function Footer() {
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <Phone className="w-5 h-5 flex-shrink-0" />
-                <span className="text-sm">(406) 555-0120</span>
+                <span className="text-sm">{adminInfo?.data?.phoneNumber}</span>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5 flex-shrink-0" />
-                <span className="text-sm">thamrick65@gmail.com</span>
+                <span className="text-sm">{adminInfo?.data?.email}</span>
               </div>
               <div className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                <span className="text-sm">
-                  2972 Westheimer Rd.
-                  <br />
-                  Santa Ana, Illinois 85486
-                </span>
+                <span className="text-sm">{adminInfo?.data?.location}</span>
               </div>
             </div>
           </div>

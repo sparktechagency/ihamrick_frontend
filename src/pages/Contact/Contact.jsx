@@ -175,34 +175,6 @@ function Contact() {
         </div>
       </div>
 
-      {/* === Conditional Rendering of About Us and Privacy Policy === */}
-      {isRootContactRoute && !isAboutUsLoading && aboutUsData && (
-        <div className="mt-10 w-full max-w-6xl px-4 sm:px-8 md:px-12 lg:px-20">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">About Us</h3>
-          {/* Render the sanitized HTML content */}
-          <div
-            className="text-gray-700"
-            dangerouslySetInnerHTML={{
-              __html: sanitizeContent(aboutUsData.data.content),
-            }}
-          />
-        </div>
-      )}
-
-      {isRootContactRoute && !isPrivacyPolicyLoading && privacyPolicyData && (
-        <div className="mt-10 w-full max-w-6xl px-4 sm:px-8 md:px-12 lg:px-20">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">Privacy Policy</h3>
-          {/* Render the sanitized HTML content */}
-          <div
-            className="text-gray-700"
-            dangerouslySetInnerHTML={{
-              __html: sanitizeContent(privacyPolicyData.data.content),
-            }}
-          />
-        </div>
-      )}
-
-      {/* ✅ Full-Image Modal */}
       {showModal && (
         <div
           className={`fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md transition-all duration-500 ${

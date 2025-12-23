@@ -77,6 +77,9 @@ const allApi = createApi({
     getPrivacyPolicy: builder.query({
       query: () => "website-content/privacy-policy",
     }),
+    getAdminInfo: builder.query({
+      query: () => "/auth/admin-info",
+    }),
   }),
 });
 
@@ -97,7 +100,8 @@ export const {
   useGetAllSocialMediaLinksQuery,
   useAddRssUserMutation,
   useGetAboutUsQuery,
-  useGetPrivacyPolicyQuery
+  useGetPrivacyPolicyQuery,
+  useGetAdminInfoQuery,
 } = allApi;
 
 export default allApi;
