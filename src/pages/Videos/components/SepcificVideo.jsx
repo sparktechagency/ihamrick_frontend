@@ -10,7 +10,7 @@ import {
   Settings,
 } from "lucide-react";
 import { useGetVideoByIdQuery } from "../../../services/allApi";
-
+import "../../../assets/hyperlink.css"
 const formatTime = (time) => {
   if (!time || isNaN(time)) return "00:00";
   const m = Math.floor(time / 60);

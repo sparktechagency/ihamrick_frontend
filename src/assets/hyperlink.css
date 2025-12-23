@@ -1,0 +1,9 @@
+.prose a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+ 
+.prose a:hover {
+  color: #1e40af;
+}
+ 

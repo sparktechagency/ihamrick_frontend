@@ -2,6 +2,7 @@ import React from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
 import { Share2, Eye } from "lucide-react";
 import { useGetPublicationByIdQuery } from "../../../services/allApi";
+import "../../../assets/hyperlink.css";
 const SpecificPublication = () => {
   const { publicationId } = useParams();
   const { data, error, isLoading } = useGetPublicationByIdQuery(publicationId);
@@ -89,7 +90,7 @@ const SpecificPublication = () => {
             <div className="text-left mt-6">
               <h3 className="text-base font-bold mb-2">Description:</h3>
               <div
-                className="m-0 text-sm sm:text-base md:text-lg custom-html-content"
+                className="prose prose-sm sm:prose-base md:prose-lg max-w-none leading-relaxed font-normal text-gray-600 custom-html-content"
                 dangerouslySetInnerHTML={{ __html: description }}
               />
             </div>

@@ -4,7 +4,7 @@ import {
   useGetPrivacyPolicyQuery,
 } from "../services/allApi";
 import { Link } from "react-router-dom";
-
+import "../assets/hyperlink.css";
 function LegalPage() {
   const [activeTab, setActiveTab] = useState("disclaimer");
 
@@ -19,7 +19,7 @@ function LegalPage() {
     isLoading: privacyLoading,
     isError: privacyError,
   } = useGetPrivacyPolicyQuery();
-console.log(privacyData?.data?.content)
+  console.log(privacyData?.data?.content);
   const renderContent = () => {
     switch (activeTab) {
       case "disclaimer":
@@ -57,16 +57,17 @@ console.log(privacyData?.data?.content)
           );
         return (
           <div className="tab-fade-in">
-       
-            <div
-              className="text-xl text-black mb-6"
-              dangerouslySetInnerHTML={{
-                __html:
-                  privacyData?.data?.content ||
-            
-                  "No content available.",
-              }}
-            />
+            <div className="space-y-3">
+              <h3 className="text-xs font-bold tracking-widest text-gray-400 uppercase">
+                Privacy Policy
+              </h3>
+              <div
+                className="prose prose-sm max-w-none leading-relaxed font-normal text-gray-600"
+                dangerouslySetInnerHTML={{
+                  __html: privacyData?.data?.content || "No content available.",
+                }}
+              />
+            </div>
           </div>
         );
 
@@ -81,14 +82,17 @@ console.log(privacyData?.data?.content)
           );
         return (
           <div className="tab-fade-in">
-            <div
-              className="text-xl text-black mb-6"
-              dangerouslySetInnerHTML={{
-                __html:
-                  aboutData?.data?.content||
-                  "No content available.",
-              }}
-            />
+            <div className="space-y-3">
+              <h3 className="text-xs font-bold tracking-widest text-gray-400 uppercase">
+                About Us
+              </h3>
+              <div
+                className="prose prose-sm max-w-none leading-relaxed font-normal text-gray-600"
+                dangerouslySetInnerHTML={{
+                  __html: aboutData?.data?.content || "No content available.",
+                }}
+              />
+            </div>
           </div>
         );
 

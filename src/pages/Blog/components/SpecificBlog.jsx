@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { Share2 } from "lucide-react";
 import { useGetBlogByIdQuery } from "../../../services/allApi";
-
+import "../../../assets/hyperlink.css"
 const SpecificBlog = () => {
   const { blogId } = useParams();
   const { state } = useLocation();
@@ -82,10 +82,12 @@ const SpecificBlog = () => {
             <h3 className="text-base sm:text-lg md:text-xl font-bold mb-1">
               Description:
             </h3>
-            <div
-              className="m-0 text-sm sm:text-base md:text-lg custom-html-content"
-              dangerouslySetInnerHTML={{ __html: description }}
-            />
+            <div className="space-y-3">
+              <div
+                className="prose prose-sm sm:prose-base md:prose-lg max-w-none leading-relaxed font-normal text-gray-600 custom-html-content"
+                dangerouslySetInnerHTML={{ __html: description }}
+              />
+            </div>
           </div>
         </div>
       </div>

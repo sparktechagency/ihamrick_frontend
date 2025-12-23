@@ -3,7 +3,7 @@ import { useLocation, useParams } from "react-router-dom";
 import { Share2 } from "lucide-react";
 import { Play, Pause } from "lucide-react";
 import io from "socket.io-client";
-
+import "../../assets/hyperlink.css";
 const SpecificPodcast = () => {
   const { liveId } = useParams();
   const { search, state } = useLocation();
@@ -239,7 +239,7 @@ const SpecificPodcast = () => {
               Description
             </h3>
             <div
-              className="m-0 text-sm sm:text-base md:text-lg custom-html-content"
+              className="prose prose-sm sm:prose-base md:prose-lg max-w-none leading-relaxed font-normal text-gray-600 custom-html-content"
               dangerouslySetInnerHTML={{ __html: description }}
             />
           </div>

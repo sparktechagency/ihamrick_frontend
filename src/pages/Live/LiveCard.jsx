@@ -1,7 +1,7 @@
 import React from "react";
 import { Play, Pause } from "lucide-react";
 import { Link } from "react-router-dom";
-
+import "../../assets/hyperlink.css";
 const LiveCard = ({
   liveId,
   imageUrl,
@@ -47,7 +47,7 @@ const LiveCard = ({
         />
         <h2 className="text-xl font-semibold text-gray-900 mt-4">{title}</h2>
         <div
-          className="m-0 text-sm sm:text-base md:text-lg custom-html-content"
+          className="prose prose-sm sm:prose-base md:prose-lg max-w-none leading-relaxed font-normal text-gray-600 custom-html-content"
           dangerouslySetInnerHTML={{ __html: description }}
         />
       </Link>
