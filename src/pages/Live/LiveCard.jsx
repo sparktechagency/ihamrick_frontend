@@ -52,14 +52,14 @@ const LiveCard = ({
         />
       </Link>
       <audio ref={audioRef} src={liveStreamUrl} />
-      <div className="flex items-center justify-center gap-4 mt-4 text-gray-900">
+      {/* <div className="flex items-center justify-center gap-4 mt-4 text-gray-900">
         <button
           onClick={togglePlay}
           className="p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700"
         >
           {isPlaying ? <Pause size={24} /> : <Play size={24} />}
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };
