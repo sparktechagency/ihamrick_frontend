@@ -309,20 +309,16 @@ function Home() {
       {/* RSS Subscription Modal */}
       {showRssModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-gradient-to-r from-red-500 via-white-400 to-black-900 p-8 rounded-lg w-11/12 sm:w-96 shadow-lg max-w-lg transition-all duration-300 ease-in-out transform scale-100 hover:scale-105">
-            <h2 className="text-3xl font-extrabold text-white mb-6 text-center">
+          <div className="bg-gradient-to-r from-red-500 via-white-400 to-black-900 p-4 sm:p-6 md:p-8 rounded-lg w-11/12 sm:w-96 max-w-lg max-h-[80vh] overflow-y-auto shadow-lg transition-all duration-300 ease-in-out transform scale-100 hover:scale-105">
+            <h2 className="sm:text-3xl font-extrabold text-white mb-4 sm:mb-6 text-center">
               Subscribe to Our RSS Feed
             </h2>
-            <p className="text-lg text-white mb-6 text-center">
-              Subscribe to stay updated with our latest content. Receive regular
-              notifications on new updates directly in your feed.
-            </p>
             {message && <p className="text-green-600 text-center">{message}</p>}
             {error && <p className="text-red-600 text-center">{error}</p>}
 
             <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-                <label className="block text-lg font-semibold text-white mb-2">
+              <div className="mb-3 sm:mb-4">
+                <label className="block text-sm sm:text-lg font-semibold text-white mb-2">
                   Name
                 </label>
                 <input
@@ -334,8 +330,8 @@ function Home() {
                 />
               </div>
 
-              <div className="mb-4">
-                <label className="block text-lg font-semibold text-white mb-2">
+              <div className="mb-3 sm:mb-4">
+                <label className="block text-sm sm:text-lg font-semibold text-white mb-2">
                   Email
                 </label>
                 <input
@@ -347,8 +343,8 @@ function Home() {
                 />
               </div>
 
-              <div className="mb-4">
-                <label className="block text-lg font-semibold text-white mb-2">
+              <div className="mb-3 sm:mb-4">
+                <label className="block text-sm sm:text-lg font-semibold text-white mb-2">
                   Phone
                 </label>
                 <input
@@ -360,8 +356,8 @@ function Home() {
                 />
               </div>
 
-              <div className="mb-6">
-                <label className="block text-lg font-semibold text-white mb-2">
+              <div className="mb-4 sm:mb-6">
+                <label className="block text-sm sm:text-lg font-semibold text-white mb-2">
                   Other Details (Optional)
                 </label>
                 <textarea

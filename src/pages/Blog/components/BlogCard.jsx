@@ -1,5 +1,4 @@
 import React from "react";
-
 import { Link } from "react-router-dom";
 
 const BlogCard = ({ id, imageUrl, headline, linkText, blogContent }) => {
@@ -20,44 +19,24 @@ const BlogCard = ({ id, imageUrl, headline, linkText, blogContent }) => {
       <path d="m12 5 7 7-7 7" />
     </svg>
   );
-  return (
-    <div
-      className="bg-black w-full max-w-[380px] h-[380px] md:h-[380px] 
-                 rounded-2xl overflow-hidden shadow-2xl 
-                 transition-all duration-300 hover:shadow-red-500/50 
-                 flex flex-col"
-    >
-      {/* Image Section */}
-      <div className="w-full h-[70%] flex-shrink-0 p-2">
-        <img
-          src={imageUrl}
-          alt="Article related visual"
-          className="w-full h-full object-cover rounded-xl"
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src =
-              "https://placehold.co/600x400/000000/777777?text=Image+Load+Failed";
-          }}
-        />
-      </div>
 
+  return (
+    <div className="w-full bg-[#F7F6FA] border-b-2 border-gray-700 py-4">
       {/* Text Content */}
-      <div className="flex flex-col justify-between p-6 h-[120px]">
+      <div className="flex justify-between items-center px-6">
         <p
-          className="text-white text-lg md:text-xl font-semibold text-center leading-snug 
-                     truncate overflow-hidden text-ellipsis"
+          className="text-black text-lg md:text-xl font-semibold text-left truncate overflow-hidden text-ellipsis"
           title={headline} // shows full headline on hover
         >
           {headline}
         </p>
 
-        <div className="flex justify-center">
-          {/* 2. Use <Link> and dynamic 'to' prop */}
+        <div className="flex justify-end">
+          {/* Use <Link> and dynamic 'to' prop */}
           <Link
-            to={`/blog/${id}`} // <-- Correctedcomponent
+            to={`/blog/${id}`}
             state={{ id, imageUrl, headline, blogContent }}
-            className="text-red-600 hover:text-red-500 transition-colors duration-200 
-                       text-lg font-bold uppercase tracking-wider flex items-center group"
+            className="text-red-600 hover:text-red-500 transition-colors duration-200 text-lg font-bold uppercase tracking-wider flex items-center group"
             aria-label={`Read more about ${headline}`}
           >
             {linkText}

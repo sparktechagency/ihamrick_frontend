@@ -116,11 +116,9 @@ function Contact() {
             className="w-full h-auto max-w-md rounded-xl drop-shadow-2xl"
           />
         </div>
-
-        {/* Right Side (Form) */}
         <div className="w-full md:w-1/2 flex flex-col justify-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Reach Out To Us
+            Reach Out To Me
           </h2>
           <p className="text-gray-500 mb-6 text-sm sm:text-base">
             We’d love to hear from you! Fill out the form to connect with our

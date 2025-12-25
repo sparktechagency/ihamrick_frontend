@@ -103,6 +103,7 @@ function Podcasts() {
               computedDuration={computedDuration}
               totalListeners={item.totalListeners}
               activeListeners={item.activeListeners}
+              from="podcasts"
             />
           );
         })}

@@ -72,7 +72,10 @@ const SpecificPodcast = () => {
   const skip = (seconds) => {
     const audio = audioRef.current;
     if (!audio) return;
-    const newTime = Math.min(Math.max(0, audio.currentTime + seconds), duration);
+    const newTime = Math.min(
+      Math.max(0, audio.currentTime + seconds),
+      duration
+    );
     audio.currentTime = newTime;
     setCurrentTime(newTime);
   };
@@ -80,7 +83,9 @@ const SpecificPodcast = () => {
   const formatTime = (value) => {
     if (!value || isNaN(value)) return "00:00";
     const minutes = Math.floor(value / 60);
-    const seconds = Math.floor(value % 60).toString().padStart(2, "0");
+    const seconds = Math.floor(value % 60)
+      .toString()
+      .padStart(2, "0");
     return `${minutes}:${seconds}`;
   };
 
@@ -99,7 +104,6 @@ const SpecificPodcast = () => {
   return (
     <div className="flex flex-col items-center py-20 min-h-screen w-full bg-white">
       <div className="max-w-4xl w-full mx-auto p-6">
-
         {/* Header */}
         <header className="flex items-center justify-between py-4">
           <button
@@ -113,7 +117,10 @@ const SpecificPodcast = () => {
             {title}
           </h1>
 
-          <button onClick={handleShare} className="text-black hover:text-gray-700">
+          <button
+            onClick={handleShare}
+            className="text-black hover:text-gray-700"
+          >
             <Share2 size={26} />
           </button>
         </header>
@@ -136,14 +143,13 @@ const SpecificPodcast = () => {
         {/* Audio Player */}
         <div className="my-10 flex flex-col items-center w-full">
           <div className="w-full sm:w-[480px] md:w-[600px] bg-[#FFE7E760] rounded-xl p-6 shadow-xl flex flex-col items-center">
-
             <img
               src={imageUrl}
               alt={title}
               className="w-full h-[260px] rounded-md object-cover shadow"
             />
 
-            <h2 className="text-black font-semibold text-lg mt-4">“{title}”</h2>
+            <h2 className="text-black font-semibold text-lg mt-4">{title}</h2>
 
             <audio
               ref={audioRef}
@@ -155,7 +161,6 @@ const SpecificPodcast = () => {
 
             {/* Controls */}
             <div className="flex items-center justify-center gap-4 mt-5 text-black">
-
               <button onClick={() => skip(-10)} className="hover:text-gray-700">
                 <RotateCcw size={22} />
               </button>
@@ -168,7 +173,9 @@ const SpecificPodcast = () => {
                 disabled={!isReady}
                 onClick={togglePlay}
                 className={`p-3 rounded-full ${
-                  isReady ? "bg-black text-white hover:bg-gray-800" : "bg-gray-400 text-white"
+                  isReady
+                    ? "bg-black text-white hover:bg-gray-800"
+                    : "bg-gray-400 text-white"
                 }`}
               >
                 {isPlaying ? <Pause size={22} /> : <Play size={22} />}
@@ -226,7 +233,10 @@ const SpecificPodcast = () => {
           {/* Description */}
           <div className="w-full sm:w-[480px] md:w-[600px] mt-6 text-gray-700">
             <h3 className="text-lg font-bold mb-2">Description</h3>
-            <p className="text-sm sm:text-base">{description}</p>
+            <div
+              className="prose prose-sm sm:prose-base md:prose-lg max-w-none leading-relaxed font-normal text-gray-600 custom-html-content"
+              dangerouslySetInnerHTML={{ __html: description }}
+            />
           </div>
         </div>
       </div>

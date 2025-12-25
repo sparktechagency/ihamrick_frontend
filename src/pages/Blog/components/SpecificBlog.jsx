@@ -1,24 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { Share2 } from "lucide-react";
 import { useGetBlogByIdQuery } from "../../../services/allApi";
-import "../../../assets/hyperlink.css"
+import "../../../assets/hyperlink.css";
+
 const SpecificBlog = () => {
+  const audioRef = useRef(null); // Reference to the audio player element
+  const [audioDuration, setAudioDuration] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true); // Default to playing when the page loads
+  const [showAlert, setShowAlert] = useState(false);
+
   const { blogId } = useParams();
   const { state } = useLocation();
   const { data, error, isLoading } = useGetBlogByIdQuery(blogId);
-  const [showAlert, setShowAlert] = useState(false);
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.onloadedmetadata = () => {
+        setAudioDuration(audioRef.current.duration);
+      };
 
-  if (error) {
-    return <div>Error loading blog</div>;
-  }
+      // Introduce a delay of 500 milliseconds (0.5 seconds)
+      setTimeout(() => {
+        audioRef.current.play();
+      }, 500); // Adjust delay time in milliseconds
+    }
+  }, []);
 
-  const blog = data?.data || {};
-  const { title, description, coverImage } = blog;
+  const handlePlayPause = () => {
+    if (audioRef.current.paused) {
+      audioRef.current.play();
+      setIsPlaying(true);
+    } else {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
 
   const handleShare = () => {
     const shareUrl = window.location.href;
@@ -26,8 +43,8 @@ const SpecificBlog = () => {
     if (navigator.share) {
       navigator
         .share({
-          title,
-          text: description,
+          title: data?.data?.title,
+          text: data?.data?.description,
           url: shareUrl,
         })
         .then(() => console.log("Successful share"))
@@ -45,6 +62,17 @@ const SpecificBlog = () => {
   const closeAlert = () => {
     setShowAlert(false);
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading blog</div>;
+  }
+
+  const blog = data?.data || {};
+  const { title, description, audioSignedUrl } = blog;
 
   return (
     <div className="flex flex-col items-center py-20 sm:py-12 md:py-16 lg:py-20 min-h-screen w-full bg-white">
@@ -69,18 +97,39 @@ const SpecificBlog = () => {
           </button>
         </header>
 
-        <div className="my-5 overflow-hidden rounded-lg shadow-md">
-          <img
-            src={coverImage}
-            alt={title}
-            className="w-full h-auto block object-cover max-w-full"
-          />
+        {/* Audio Player */}
+        <div className="w-full mt-8">
+          <h3 className="text-base sm:text-lg md:text-xl font-bold mb-2">
+            Audio: {title || "Unknown Title"}
+          </h3>
+          <div className="flex items-center gap-3 mb-4">
+            <button
+              onClick={handlePlayPause}
+              className="bg-purple-600 text-white rounded-lg px-4 py-2 shadow hover:bg-purple-700 transition"
+            >
+              {isPlaying ? "Pause" : "Play"}
+            </button>
+            <span className="text-sm text-gray-500">
+              {audioDuration > 0
+                ? `${(audioDuration / 60).toFixed(2)} minutes`
+                : "Loading..."}
+            </span>
+          </div>
+          <audio
+            ref={audioRef}
+            controls
+            autoPlay
+            className="w-full bg-gray-100 rounded-lg shadow-lg"
+          >
+            <source src={audioSignedUrl} type="audio/mpeg" />
+            Your browser does not support the audio element.
+          </audio>
         </div>
 
         <div className="text-gray-700">
           <div className="mt-8 pt-3">
             <h3 className="text-base sm:text-lg md:text-xl font-bold mb-1">
-              Description:
+              Blog:
             </h3>
             <div className="space-y-3">
               <div

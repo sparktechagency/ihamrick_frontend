@@ -5,7 +5,6 @@ import BlogCard from "./components/BlogCard";
 import HorizontalCard from "../../components/HorizontalCard";
 import { useGetAllBlogsQuery } from "../../services/allApi";
 import Pagination from "../../components/Pagination";
-
 function Blog() {
   const [currentPage, setCurrentPage] = useState(1);
   const { data, isLoading, error } = useGetAllBlogsQuery();
@@ -51,6 +50,12 @@ function Blog() {
     ? "text-2xl sm:text-3xl md:text-4xl"
     : "text-3xl sm:text-4xl md:text-5xl";
 
+  // Determine grid columns based on the CardComponent
+  const gridCols =
+    CardComponent === BlogCard
+      ? "grid-cols-1"
+      : "sm:grid-cols-2 lg:grid-cols-3";
+
   return (
     <div
       className={`flex flex-col items-center w-full relative ${containerPadding}`}
@@ -82,7 +87,9 @@ function Blog() {
       </header>
 
       {/* Blog Grid */}
-      <div className="grid gap-8 sm:gap-10 md:gap-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 px-4 sm:px-6 md:px-10 w-full max-w-7xl">
+      <div
+        className={`grid gap-8 sm:gap-10 md:gap-12 ${gridCols} px-4 sm:px-6 md:px-10 w-full max-w-7xl`}
+      >
         {currentItems?.map((item) => (
           <CardComponent
             key={item._id}

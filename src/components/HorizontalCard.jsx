@@ -36,22 +36,22 @@ export default function HorizontalCard({
       }}
       className="flex items-center w-full max-w-md bg-black rounded-xl overflow-hidden shadow-md hover:scale-[1.02] transition-transform"
     >
-      {/* Left Image */}
-      <img
-        src={imageUrl}
-        alt={title}
-        className="w-20 h-20 object-cover rounded-l-xl flex-shrink-0"
-        onError={(e) => {
-          e.target.onerror = null;
-          e.target.src =
-            "https://placehold.co/80x80/000000/777777?text=No+Image";
-        }}
-      />
+      {from !== "blogs" && (
+        <img
+          src={imageUrl}
+          alt={title}
+          className="w-20 h-20 object-cover rounded-l-xl flex-shrink-0"
+          onError={(e) => {
+            // Handle image error gracefully
+            e.target.src =
+              "https://placehold.co/80x80/000000/777777?text=No+Image";
+          }}
+        />
+      )}
 
       <div className="flex-1 px-4 py-3 text-white font-semibold text-sm sm:text-base truncate">
         {from === "publications" || from === "blogs" ? headline : title}
       </div>
-
 
       <div className="bg-[#D75757] w-16 h-full flex items-center justify-center">
         {typeof rightIcon === "string" ? (
