@@ -5,9 +5,11 @@ import BlogCard from "./components/BlogCard";
 import HorizontalCard from "../../components/HorizontalCard";
 import { useGetAllBlogsQuery } from "../../services/allApi";
 import Pagination from "../../components/Pagination";
+
 function Blog() {
   const [currentPage, setCurrentPage] = useState(1);
-  const { data, isLoading, error } = useGetAllBlogsQuery();
+  const [sortBy, setSortBy] = useState("title"); // Default sorting by title
+  const [sortOrder, setSortOrder] = useState("asc"); // Default sorting order is ascending
   const location = useLocation();
   const currentPath = location.pathname;
 
@@ -17,6 +19,14 @@ function Blog() {
 
   const ITEMS_PER_PAGE = 15;
   const CardComponent = fromMain ? HorizontalCard : BlogCard;
+
+  // API Call with sorting parameters
+  const { data, isLoading, error } = useGetAllBlogsQuery({
+    page: currentPage,
+    limit: ITEMS_PER_PAGE,
+    sortBy: sortBy,
+    sortOrder: sortOrder,
+  });
 
   if (isLoading)
     return (
@@ -85,6 +95,28 @@ function Blog() {
           </div>
         )}
       </header>
+
+      {/* Sorter (visible only on /blog route) */}
+      {isRootBlogRoute && (
+        <div className="absolute top-1/4 right-4 sm:right-10 z-10">
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="px-3 py-2 bg-gray-900 text-white text-sm font-semibold rounded-md shadow-md hover:bg-gray-700 transition duration-300"
+          >
+            <option value="title">Sort by Title</option>
+            <option value="date">Sort by Date</option>
+          </select>
+          <select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            className="ml-2 px-3 py-2 bg-gray-900 text-white text-sm font-semibold rounded-md shadow-md hover:bg-gray-700 transition duration-300"
+          >
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+        </div>
+      )}
 
       {/* Blog Grid */}
       <div
