@@ -9,11 +9,15 @@ import videoclick from "../../assets/videoclick.png";
 
 function Videos() {
   const [currentPage, setCurrentPage] = useState(1);
-  const { data, isLoading, error } = useGetAllVideosQuery();
+  const [sortBy, setSortBy] = useState("title"); // Default sorting by title
+  const [sortOrder, setSortOrder] = useState("asc"); // Default sorting order is ascending
+  const { data, isLoading, error } = useGetAllVideosQuery({
+    sortBy,
+    sortOrder,
+  });
   const location = useLocation();
   const currentPath = location.pathname;
 
-  // Logic to determine context
   const fromMain = currentPath === "/" || currentPath === "/home";
   const isRootVideosRoute = currentPath === "/videos";
 
@@ -27,14 +31,10 @@ function Videos() {
     if (data) {
       const total = data?.meta?.total || 0;
       setTotalPages(Math.ceil(total / ITEMS_PER_PAGE));
-
       const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-
-      // If on Home, show only the first 3 or 6 items; otherwise, use pagination logic
       const items = fromMain
         ? data?.data.slice(0, 6)
         : data?.data.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-
       setCurrentItems(items || []);
     }
   }, [data, currentPage, fromMain]);
@@ -54,7 +54,6 @@ function Videos() {
       </div>
     );
 
-  // --- Dynamic Styling Based on Context ---
   const containerPadding = fromMain
     ? "py-8 sm:py-12 md:py-16"
     : "py-12 sm:py-16 md:py-24 lg:py-32 min-h-[98vh]";
@@ -68,8 +67,6 @@ function Videos() {
       className={`flex flex-col items-center w-full relative ${containerPadding}`}
     >
       {isRootVideosRoute && <Motivation />}
-
-      {/* Header Row */}
       <header className="relative flex justify-center items-center mb-8 sm:mb-10 md:mb-12 w-full px-4 sm:px-8 max-w-7xl">
         <h1
           className={`${titleSize} font-extrabold text-gray-900 text-center w-full`}
@@ -89,7 +86,27 @@ function Videos() {
         )}
       </header>
 
-      {/* Video Grid */}
+      {isRootVideosRoute && (
+        <div className="absolute top-1/4 right-4 sm:right-6 md:right-10 z-10 flex flex-col sm:flex-row gap-2 sm:gap-4">
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="px-4 py-2 bg-gray-900 text-white text-sm sm:text-base font-semibold rounded-md shadow-md hover:bg-gray-700 transition duration-300 w-full sm:w-auto"
+          >
+            <option value="title">Sort by Title</option>
+            <option value="createdAt">Sort by Date</option>
+          </select>
+          <select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            className="px-4 py-2 bg-gray-900 text-white text-sm sm:text-base font-semibold rounded-md shadow-md hover:bg-gray-700 transition duration-300 w-full sm:w-auto"
+          >
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+        </div>
+      )}
+
       <div className="grid gap-8 sm:gap-10 md:gap-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 px-4 sm:px-6 md:px-10 w-full max-w-7xl">
         {currentItems.map((item) => (
           <CardComponent
@@ -105,7 +122,6 @@ function Videos() {
         ))}
       </div>
 
-      {/* Pagination - Only shows on the main Videos page */}
       {totalPages > 1 && isRootVideosRoute && (
         <div className="mt-12">
           <Pagination

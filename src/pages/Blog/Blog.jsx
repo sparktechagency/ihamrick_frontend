@@ -13,7 +13,6 @@ function Blog() {
   const location = useLocation();
   const currentPath = location.pathname;
 
-  // Context Logic
   const fromMain = currentPath === "/" || currentPath === "/home";
   const isRootBlogRoute = currentPath === "/blog";
 
@@ -28,6 +27,10 @@ function Blog() {
     sortOrder: sortOrder,
   });
 
+  useEffect(() => {
+    console.log(data);
+  }, [sortBy, sortOrder]);
+
   if (isLoading)
     return (
       <div className="flex justify-center py-20 text-gray-500">
@@ -41,17 +44,14 @@ function Blog() {
       </div>
     );
 
-  // Logic for data slicing and pagination
   const total = data?.meta?.total || 0;
   const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
 
-  // Show only 6 blogs on Home page, otherwise use standard pagination slice
   const currentItems = fromMain
     ? data?.data.slice(0, 6)
     : data?.data.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
-  // --- Dynamic Styling Based on Context ---
   const containerPadding = fromMain
     ? "py-8 sm:py-12 md:py-16"
     : "py-12 sm:py-16 md:py-24 lg:py-32 min-h-[98vh]";
@@ -60,7 +60,6 @@ function Blog() {
     ? "text-2xl sm:text-3xl md:text-4xl"
     : "text-3xl sm:text-4xl md:text-5xl";
 
-  // Determine grid columns based on the CardComponent
   const gridCols =
     CardComponent === BlogCard
       ? "grid-cols-1"
@@ -72,7 +71,6 @@ function Blog() {
     >
       {isRootBlogRoute && <Motivation />}
 
-      {/* Header Row */}
       <header
         className={`relative flex justify-center items-center w-full px-4 sm:px-8 max-w-7xl ${
           fromMain ? "mb-6" : "mb-8 sm:mb-10 md:mb-12"
@@ -96,21 +94,20 @@ function Blog() {
         )}
       </header>
 
-      {/* Sorter (visible only on /blog route) */}
       {isRootBlogRoute && (
-        <div className="absolute top-1/4 right-4 sm:right-10 z-10">
+        <div className="absolute top-1/4 right-4 sm:right-6 md:right-10 z-10 flex flex-col sm:flex-row gap-2 sm:gap-4">
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="px-3 py-2 bg-gray-900 text-white text-sm font-semibold rounded-md shadow-md hover:bg-gray-700 transition duration-300"
+            className="px-4 py-2 bg-gray-900 text-white text-sm sm:text-base font-semibold rounded-md shadow-md hover:bg-gray-700 transition duration-300 w-full sm:w-auto"
           >
             <option value="title">Sort by Title</option>
-            <option value="date">Sort by Date</option>
+            <option value="createdAt">Sort by Date</option>
           </select>
           <select
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
-            className="ml-2 px-3 py-2 bg-gray-900 text-white text-sm font-semibold rounded-md shadow-md hover:bg-gray-700 transition duration-300"
+            className="px-4 py-2 bg-gray-900 text-white text-sm sm:text-base font-semibold rounded-md shadow-md hover:bg-gray-700 transition duration-300 w-full sm:w-auto"
           >
             <option value="asc">Ascending</option>
             <option value="desc">Descending</option>
@@ -118,7 +115,6 @@ function Blog() {
         </div>
       )}
 
-      {/* Blog Grid */}
       <div
         className={`grid gap-8 sm:gap-10 md:gap-12 ${gridCols} px-4 sm:px-6 md:px-10 w-full max-w-7xl`}
       >
@@ -135,7 +131,6 @@ function Blog() {
         ))}
       </div>
 
-      {/* Pagination - Only visible on the main Blog route */}
       {totalPages > 1 && isRootBlogRoute && (
         <div className="mt-12">
           <Pagination

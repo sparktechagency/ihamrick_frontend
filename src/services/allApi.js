@@ -3,14 +3,16 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 const allApi = createApi({
   reducerPath: "allApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://api.pg-65.com/api/" || "https://api.pg-65.com/api/",
+    baseUrl: "https://api.pg-65.com/api/", // Ensure that the correct base URL is used
   }),
   endpoints: (builder) => ({
     getAllVideos: builder.query({
-      query: () => "videos/",
+      query: ({ sortBy, sortOrder }) =>
+        `videos/?sortBy=${sortBy}&sortOrder=${sortOrder}`,
     }),
     getAllBlogs: builder.query({
-      query: () => "blog/website-blogs",
+      query: ({ sortBy, sortOrder }) =>
+        `blog/website-blogs?sortBy=${sortBy}&sortOrder=${sortOrder}`,
     }),
     getVideoById: builder.query({
       query: (videoId) => `videos/watch/${videoId}`,
@@ -19,13 +21,15 @@ const allApi = createApi({
       query: (blogId) => `blog/website-blogs/${blogId}`,
     }),
     getAllPublications: builder.query({
-      query: () => "publications/website-publications",
+      query: ({ sortBy, sortOrder }) =>
+        `publications/website-publications?sortBy=${sortBy}&sortOrder=${sortOrder}`,
     }),
     getPublicationById: builder.query({
       query: (publicationId) => `publications/${publicationId}`,
     }),
     getRecordedPodcasts: builder.query({
-      query: () => "/podcasts/recorded",
+      query: ({ sortBy, sortOrder }) =>
+        `/podcasts/recorded?sortBy=${sortBy}&sortOrder=${sortOrder}`,
     }),
     getRecordedPodcastById: builder.query({
       query: (podcastId) => `podcasts/${podcastId}`,
@@ -42,7 +46,8 @@ const allApi = createApi({
       },
     }),
     getAllPodcast: builder.query({
-      query: () => "/podcasts",
+      query: ({ sortBy, sortOrder }) =>
+        `/podcasts?sortBy=${sortBy}&sortOrder=${sortOrder}`,
     }),
     getLivePodcasts: builder.query({
       query: (liveId) => `/podcasts/${liveId}`,
@@ -57,7 +62,6 @@ const allApi = createApi({
     getSearchResults: builder.query({
       query: (keyword) => `/search/?keyword=${keyword}`,
     }),
-    // Added life-suggestions API
     getLifeSuggestions: builder.query({
       query: () => "life-suggestions/",
     }),
@@ -96,7 +100,7 @@ export const {
   useGetLivePodcastsQuery,
   useContactUsMutation,
   useGetSearchResultsQuery,
-  useGetLifeSuggestionsQuery, // Exported hook for the new API
+  useGetLifeSuggestionsQuery,
   useGetAllSocialMediaLinksQuery,
   useAddRssUserMutation,
   useGetAboutUsQuery,

@@ -8,14 +8,18 @@ import { useGetAllPublicationsQuery } from "../../services/allApi";
 
 function Publications() {
   const [currentPage, setCurrentPage] = useState(1);
-  const { data, isLoading, error } = useGetAllPublicationsQuery();
+  const [sortBy, setSortBy] = useState("title");
+  const [sortOrder, setSortOrder] = useState("asc");
+  const { data, isLoading, error } = useGetAllPublicationsQuery({
+    sortBy,
+    sortOrder,
+  });
   const location = useLocation();
   const currentPath = location.pathname;
 
-  // Context Logic
   const fromMain = currentPath === "/" || currentPath === "/home";
   const isRootPublicationsRoute = currentPath === "/publications";
-  
+
   const ITEMS_PER_PAGE = 15;
   const [totalPages, setTotalPages] = useState(0);
   const [currentItems, setCurrentItems] = useState([]);
@@ -26,24 +30,38 @@ function Publications() {
     if (data) {
       const total = data?.meta?.total || 0;
       setTotalPages(Math.ceil(total / ITEMS_PER_PAGE));
-      
+
       const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-      
-      // If on Home page, limit to 6 items; otherwise, use pagination logic
-      const items = fromMain 
-        ? data?.data.slice(0, 6) 
+
+      const items = fromMain
+        ? data?.data.slice(0, 6)
         : data?.data.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-        
+
       setCurrentItems(items || []);
     }
   }, [data, currentPage, fromMain]);
 
-  if (isLoading) return <div className="flex justify-center py-20 text-gray-500">Loading publications...</div>;
-  if (error) return <div className="text-center py-20 text-red-500">Error loading publications. Please try again later.</div>;
+  const handlePageChange = (page) => {
+    if (page > 0 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
 
-  // --- Dynamic Styling Based on Context ---
-  const containerPadding = fromMain 
-    ? "py-8 sm:py-12 md:py-16" 
+  if (isLoading)
+    return (
+      <div className="flex justify-center py-20 text-gray-500">
+        Loading publications...
+      </div>
+    );
+  if (error)
+    return (
+      <div className="text-center py-20 text-red-500">
+        Error loading publications. Please try again later.
+      </div>
+    );
+
+  const containerPadding = fromMain
+    ? "py-8 sm:py-12 md:py-16"
     : "py-12 sm:py-16 md:py-24 lg:py-32 min-h-[98vh]";
 
   const titleSize = fromMain
@@ -51,12 +69,19 @@ function Publications() {
     : "text-3xl sm:text-4xl md:text-5xl";
 
   return (
-    <div className={`flex flex-col items-center w-full relative ${containerPadding}`}>
+    <div
+      className={`flex flex-col items-center w-full relative ${containerPadding}`}
+    >
       {isRootPublicationsRoute && <Motivation />}
 
-      {/* Header Row */}
-      <header className={`relative flex justify-center items-center w-full px-4 sm:px-8 max-w-7xl ${fromMain ? "mb-6" : "mb-8 sm:mb-10 md:mb-12"}`}>
-        <h1 className={`${titleSize} font-extrabold text-gray-900 text-center w-full`}>
+      <header
+        className={`relative flex justify-center items-center w-full px-4 sm:px-8 max-w-7xl ${
+          fromMain ? "mb-6" : "mb-8 sm:mb-10 md:mb-12"
+        }`}
+      >
+        <h1
+          className={`${titleSize} font-extrabold text-gray-900 text-center w-full`}
+        >
           Publications
         </h1>
 
@@ -72,7 +97,27 @@ function Publications() {
         )}
       </header>
 
-      {/* Publications Grid */}
+      {isRootPublicationsRoute && (
+        <div className="absolute top-1/4 right-4 sm:right-6 md:right-10 z-10 flex flex-col sm:flex-row gap-2 sm:gap-4">
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="px-4 py-2 bg-gray-900 text-white text-sm sm:text-base font-semibold rounded-md shadow-md hover:bg-gray-700 transition duration-300 w-full sm:w-auto"
+          >
+            <option value="title">Sort by Title</option>
+            <option value="createdAt">Sort by Date</option>
+          </select>
+          <select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            className="px-4 py-2 bg-gray-900 text-white text-sm sm:text-base font-semibold rounded-md shadow-md hover:bg-gray-700 transition duration-300 w-full sm:w-auto"
+          >
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+        </div>
+      )}
+
       <div className="grid gap-8 sm:gap-10 md:gap-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 px-4 sm:px-6 md:px-10 w-full max-w-7xl">
         {currentItems?.map((item) => (
           <CardComponent
@@ -89,7 +134,6 @@ function Publications() {
         ))}
       </div>
 
-      {/* Pagination - Hidden on Home */}
       {totalPages > 1 && isRootPublicationsRoute && (
         <div className="mt-12">
           <Pagination
