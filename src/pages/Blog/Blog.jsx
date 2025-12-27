@@ -95,23 +95,36 @@ function Blog() {
       </header>
 
       {isRootBlogRoute && (
-        <div className="absolute top-1/4 right-4 sm:right-6 md:right-10 z-10 flex flex-col sm:flex-row gap-2 sm:gap-4">
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="px-4 py-2 bg-gray-900 text-white text-sm sm:text-base font-semibold rounded-md shadow-md hover:bg-gray-700 transition duration-300 w-full sm:w-auto"
-          >
-            <option value="title">Sort by Title</option>
-            <option value="createdAt">Sort by Date</option>
-          </select>
-          <select
-            value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value)}
-            className="px-4 py-2 bg-gray-900 text-white text-sm sm:text-base font-semibold rounded-md shadow-md hover:bg-gray-700 transition duration-300 w-full sm:w-auto"
-          >
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-          </select>
+        <div className="flex flex-col gap-6 text-center pb-6">
+     
+          {/* Filters Section */}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+            <div className="flex flex-col gap-1 w-full sm:w-56">
+              <label className="text-sm font-medium text-gray-700">
+                Sort by
+              </label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="w-full px-4 py-2 bg-gray-900 text-white text-sm font-semibold rounded-md shadow-md hover:bg-gray-700 transition focus:outline-none"
+              >
+                <option value="title">Title</option>
+                <option value="createdAt">Date</option>
+              </select>
+            </div>
+
+            <div className="flex flex-col gap-1 w-full sm:w-56">
+              <label className="text-sm font-medium text-gray-700">Order</label>
+              <select
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+                className="w-full px-4 py-2 bg-gray-900 text-white text-sm font-semibold rounded-md shadow-md hover:bg-gray-700 transition focus:outline-none"
+              >
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+              </select>
+            </div>
+          </div>
         </div>
       )}
 
