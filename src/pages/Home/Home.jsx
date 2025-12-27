@@ -394,7 +394,7 @@ function Home() {
                 onClick={handleCancelSubscription}
                 className="w-full py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 mt-4"
               >
-                Cancel
+                Not Now, Maybe Later
               </button>
             </form>
           </div>
