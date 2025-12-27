@@ -125,21 +125,6 @@ const SpecificPodcast = () => {
           </button>
         </header>
 
-        {/* Active + Total Listeners */}
-        <div className="flex justify-center gap-6 mt-4 text-gray-700 text-sm">
-          <div className="flex items-center gap-2">
-            <UserCheck size={18} className="text-green-600" />
-            <span className="font-semibold">{activeListeners}</span>
-            <span>Listening Now</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Users size={18} className="text-blue-600" />
-            <span className="font-semibold">{totalListeners}</span>
-            <span>Total Listeners</span>
-          </div>
-        </div>
-
         {/* Audio Player */}
         <div className="my-10 flex flex-col items-center w-full">
           <div className="w-full sm:w-[480px] md:w-[600px] bg-[#FFE7E760] rounded-xl p-6 shadow-xl flex flex-col items-center">

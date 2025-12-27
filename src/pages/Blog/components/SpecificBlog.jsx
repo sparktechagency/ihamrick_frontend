@@ -102,19 +102,6 @@ const SpecificBlog = () => {
           <h3 className="text-base sm:text-lg md:text-xl font-bold mb-2">
             Audio: {title || "Unknown Title"}
           </h3>
-          <div className="flex items-center gap-3 mb-4">
-            <button
-              onClick={handlePlayPause}
-              className="bg-purple-600 text-white rounded-lg px-4 py-2 shadow hover:bg-purple-700 transition"
-            >
-              {isPlaying ? "Pause" : "Play"}
-            </button>
-            <span className="text-sm text-gray-500">
-              {audioDuration > 0
-                ? `${(audioDuration / 60).toFixed(2)} minutes`
-                : "Loading..."}
-            </span>
-          </div>
           <audio
             ref={audioRef}
             controls
