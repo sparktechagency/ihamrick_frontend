@@ -38,10 +38,23 @@ function Home() {
     isLoading,
     error: lifeError,
   } = useGetLifeSuggestionsQuery();
-  const { data: videosData } = useGetAllVideosQuery();
-  const { data: blogsData } = useGetAllBlogsQuery();
-  const { data: publicationsData } = useGetAllPublicationsQuery();
-  const { data: podcastData } = useGetRecordedPodcastsQuery();
+  const { data: videosData, isLoading: news } = useGetAllVideosQuery({
+    sortOrder: "asc",
+    sortBy: "createdAt",
+  });
+
+  const { data: blogsData } = useGetAllBlogsQuery({
+    sortOrder: "asc",
+    sortBy: "createdAt",
+  });
+  const { data: publicationsData } = useGetAllPublicationsQuery({
+    sortOrder: "asc",
+    sortBy: "createdAt",
+  });
+  const { data: podcastData } = useGetRecordedPodcastsQuery({
+    sortOrder: "asc",
+    sortBy: "createdAt",
+  });
 
   // RSS Mutation Hook for Subscription
   const [addRssUser, { isLoading: isSubmitting, isError, isSuccess }] =
@@ -72,6 +85,7 @@ function Home() {
 
   // Header Background Scroll Effect
   useEffect(() => {
+    console.log(videosData);
     const handleScroll = () => {
       if (!heroRef.current) return;
       const heroBottom = heroRef.current.getBoundingClientRect().bottom;
@@ -81,7 +95,7 @@ function Home() {
     window.addEventListener("scroll", handleScroll);
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [videosData]);
 
   // Check if user is already subscribed (using cookies)
   useEffect(() => {
